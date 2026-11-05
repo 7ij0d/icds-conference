@@ -1757,6 +1757,7 @@ apiRouter.get('/admin/participants', requireAdmin, async (req, res) => {
       search = '',
       day = '',
       day_id = '',
+      date = '',
       shift_number = '',
       supervisor = '',
       supervisor_id = '',
@@ -1781,6 +1782,10 @@ apiRouter.get('/admin/participants', requireAdmin, async (req, res) => {
       params.push(dayFilter);
       const idx = params.length;
       conditions.push(`(p.registration_day_name = $${idx} OR CAST(p.registration_day_id AS TEXT) = $${idx})`);
+    }
+    if (date && String(date).trim() !== '') {
+      params.push(String(date).trim());
+      conditions.push(`p.registration_date = $${params.length}`);
     }
     if (shift_number && ['1', '2'].includes(String(shift_number).trim())) {
       params.push(Number(shift_number));

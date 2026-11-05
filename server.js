@@ -1583,6 +1583,7 @@ app.get('/api/admin/participants', requireAdmin, (req, res) => {
       search = '',
       day = '',
       day_id = '',
+      date = '',
       shift_number = '',
       supervisor = '',
       supervisor_id = '',
@@ -1607,6 +1608,11 @@ app.get('/api/admin/participants', requireAdmin, (req, res) => {
     if (dayFilter !== '') {
       conditions.push('(p.registration_day_name = ? OR CAST(p.registration_day_id AS TEXT) = ?)');
       params.push(dayFilter, dayFilter);
+    }
+
+    if (date && String(date).trim() !== '') {
+      conditions.push('p.registration_date = ?');
+      params.push(String(date).trim());
     }
 
     if (shift_number && ['1', '2'].includes(String(shift_number).trim())) {

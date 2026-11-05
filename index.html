@@ -391,212 +391,532 @@
       </div>
 
       <!-- Admin Panel Workspace -->
-      <div id="admin-panel-workspace" class="admin-card hidden">
-        <div class="admin-header-bar">
-          <div>
-            <h2 class="admin-main-title">لوحة تحكم الأدمن – مؤتمر ICDS (النسخة الرابعة)</h2>
-          </div>
-          <button type="button" class="admin-logout-btn" id="admin-logout-btn">تسجيل الخروج</button>
-        </div>
+      <div id="admin-panel-workspace" class="admin-shell hidden">
+        <div class="admin-layout-wrapper">
 
-        <!-- 5 Essential Admin Tabs -->
-        <div class="admin-tabs-bar" role="tablist">
-          <button type="button" class="admin-tab-btn active" data-admin-tab="supervisors">إدارة المشرفين والفترات الزمنية</button>
-          <button type="button" class="admin-tab-btn" data-admin-tab="registrations">إدارة التسجيلات</button>
-          <button type="button" class="admin-tab-btn" data-admin-tab="receipts">الإيصالات</button>
-          <button type="button" class="admin-tab-btn" data-admin-tab="reports">التقارير</button>
-          <button type="button" class="admin-tab-btn" data-admin-tab="import">استيراد البيانات</button>
-        </div>
-
-        <div class="reg-divider"></div>
-
-        <!-- TAB 1: إدارة المشرفين والفترات الزمنية -->
-        <div id="admin-tab-supervisors" class="admin-tab-pane active">
-          <div class="admin-section-grid">
-            <!-- Right Column: Supervisors List & Add Form -->
-            <div class="admin-subbox">
-              <h3 class="subbox-title">إضافة وإدارة أسماء المشرفين</h3>
-              <form id="add-supervisor-form" class="inline-add-form">
-                <input type="text" id="new-sup-name" class="form-input plain-input" placeholder="اسم المشرف الكامل" required />
-                <button type="submit" class="teal-action-btn">إضافة مشرف</button>
-              </form>
-
-              <div class="supervisors-list-wrap">
-                <table class="clean-table">
-                  <thead>
-                    <tr>
-                      <th>اسم المشرف</th>
-                      <th>الحالة</th>
-                      <th>التسجيلات</th>
-                      <th>إجراءات</th>
-                    </tr>
-                  </thead>
-                  <tbody id="admin-supervisors-tbody">
-                    <tr><td colspan="4" class="empty-cell">لا يوجد مشرفون مضافون حالياً.</td></tr>
-                  </tbody>
-                </table>
+          <!-- 1. RIGHT SIDEBAR (DESKTOP) & TOP HEADER (MOBILE) -->
+          <aside class="admin-sidebar" id="admin-sidebar">
+            <!-- Conference Identity in Sidebar -->
+            <div class="admin-sidebar-brand">
+              <div class="admin-sidebar-tooth" aria-hidden="true">
+                <svg viewBox="0 0 64 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20.5 9.5C14.5 9.5 10.5 14.5 11.2 21.8C11.8 28.2 14.8 35.4 17.2 43.2C18.4 47.1 20.3 49.5 22.4 49.5C24.5 49.5 25.8 46.2 27.1 41.2C28.2 37.1 29.8 35.2 32 35.2C34.2 35.2 35.8 37.1 36.9 41.2C38.2 46.2 39.5 49.5 41.6 49.5C43.7 49.5 45.6 47.1 46.8 43.2C49.2 35.4 52.2 28.2 52.8 21.8C53.5 14.5 49.5 9.5 43.5 9.5C39.2 9.5 35.8 11.8 32 11.8C28.2 11.8 24.8 9.5 20.5 9.5Z" stroke="#066a71" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M18 14.5C23.5 18.5 31.5 19.2 41.5 15.2" stroke="#066a71" stroke-width="2.6" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="admin-sidebar-brand-text">
+                <div class="admin-sidebar-title">مؤتمر ICDS الدولي<br>لطب الأسنان</div>
+                <span class="admin-sidebar-edition-pill">النسخة الرابعة</span>
+              </div>
+              <div class="admin-sidebar-en-brand" dir="ltr">
+                <div class="admin-sidebar-en-title">ICDS</div>
+                <div class="admin-sidebar-en-sub">4th Edition</div>
               </div>
             </div>
 
-            <!-- Left Column: Assign 4 Supervisors Per Day Across 2 Shifts -->
-            <div class="admin-subbox">
-              <h3 class="subbox-title">توزيع المشرفين على الأيام والفترات الزمنية (4 مشرفين لكل يوم / مشرفان لكل فترة)</h3>
-              <div id="admin-days-assignment-list" class="days-assignment-list"></div>
+            <!-- Sidebar Navigation Links matching reference image -->
+            <nav class="admin-sidebar-nav" role="tablist">
+              <button type="button" class="admin-sidebar-nav-item" data-admin-tab="home" id="side-tab-home">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="side-nav-icon">
+                  <path d="M3 10.5L12 3l9 7.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M5 9.5V20a1 1 0 001 1h4.5v-6h3v6H18a1 1 0 001-1V9.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>الرئيسية</span>
+              </button>
+
+              <button type="button" class="admin-sidebar-nav-item" data-admin-tab="supervisors" id="side-tab-supervisors">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="side-nav-icon">
+                  <rect x="3" y="4" width="18" height="17" rx="2" stroke-linecap="round"/>
+                  <path d="M16 2v4M8 2v4M3 10h18" stroke-linecap="round"/>
+                  <circle cx="9" cy="15" r="1.5"/>
+                  <circle cx="15" cy="15" r="1.5"/>
+                </svg>
+                <span>إدارة المشرفين والفترات</span>
+              </button>
+
+              <!-- Active Item matching reference image -->
+              <button type="button" class="admin-sidebar-nav-item active" data-admin-tab="registrations" id="side-tab-registrations">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="side-nav-icon">
+                  <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                  <rect x="9" y="3" width="6" height="4" rx="1"/>
+                  <path d="M9 12h6M9 16h6" stroke-linecap="round"/>
+                </svg>
+                <span>سجل التسجيلات</span>
+              </button>
+
+              <button type="button" class="admin-sidebar-nav-item" data-admin-tab="reports" id="side-tab-reports">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="side-nav-icon">
+                  <path d="M18 20V10M12 20V4M6 20v-6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>التقارير والإحصائيات</span>
+              </button>
+
+              <button type="button" class="admin-sidebar-nav-item" data-admin-tab="import" id="side-tab-import">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="side-nav-icon">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5-5 5 5M12 5v12" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>استيراد البيانات</span>
+              </button>
+
+              <button type="button" class="admin-sidebar-nav-item" data-admin-tab="settings" id="side-tab-settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="side-nav-icon">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>الإعدادات</span>
+              </button>
+            </nav>
+
+            <!-- Logout Button at bottom of sidebar matching reference -->
+            <div class="admin-sidebar-footer">
+              <button type="button" class="admin-sidebar-logout-btn" id="admin-logout-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="side-logout-icon">
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>تسجيل الخروج</span>
+              </button>
             </div>
-          </div>
-        </div>
+          </aside>
 
-        <!-- TAB 2: إدارة التسجيلات -->
-        <div id="admin-tab-registrations" class="admin-tab-pane hidden">
-          <div class="filters-bar">
-            <input type="text" id="filter-search" class="form-input plain-input" placeholder="بحث بالاسم العربي أو الإنجليزي أو رقم التسجيل..." />
-            <select id="filter-day" class="form-select">
-              <option value="">كل الأيام</option>
-            </select>
-            <select id="filter-shift" class="form-select">
-              <option value="">كل الفترات الزمنية</option>
-              <option value="1">الفترة الأولى (9:30 ص – 11:30 ص)</option>
-              <option value="2">الفترة الثانية (11:30 ص – 1:30 م)</option>
-            </select>
-            <select id="filter-supervisor" class="form-select">
-              <option value="">كل المشرفين</option>
-            </select>
-            <select id="filter-category" class="form-select">
-              <option value="">كل الفئات</option>
-              <option value="student">طالب</option>
-              <option value="doctor">دكتور</option>
-            </select>
-            <select id="filter-year" class="form-select">
-              <option value="">كل السنوات الدراسية</option>
-              <option value="السنة الأولى">السنة الأولى</option>
-              <option value="السنة الثانية">السنة الثانية</option>
-              <option value="السنة الثالثة">السنة الثالثة</option>
-              <option value="السنة الرابعة">السنة الرابعة</option>
-              <option value="الامتياز">الامتياز</option>
-            </select>
-            <button type="button" class="teal-action-btn outline" id="export-excel-btn">تصدير Excel</button>
-          </div>
+          <!-- 2. MAIN ADMIN CONTENT AREA -->
+          <div class="admin-main-canvas">
 
-          <div class="table-scroll">
-            <table class="clean-table">
-              <thead>
-                <tr>
-                  <th>رقم التسجيل</th>
-                  <th>الاسم بالعربي</th>
-                  <th>الاسم بالإنجليزي</th>
-                  <th>الفئة</th>
-                  <th>السنة الدراسية</th>
-                  <th>الرسوم</th>
-                  <th>اليوم</th>
-                  <th>الفترة الزمنية</th>
-                  <th>المشرف</th>
-                  <th>وقت التسجيل الفعلي</th>
-                  <th>الإيصال</th>
-                  <th>إجراءات</th>
-                </tr>
-              </thead>
-              <tbody id="admin-registrations-tbody">
-                <tr><td colspan="12" class="empty-cell">لا توجد تسجيلات حالياً.</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+            <!-- Topbar in Main Canvas (User Avatar & Notifications) matching reference -->
+            <div class="admin-topbar">
+              <div class="admin-topbar-left">
+                <div class="admin-profile-pill">
+                  <span class="admin-chevron-down">▾</span>
+                  <span class="admin-role-label">المدير العام</span>
+                  <div class="admin-avatar-circle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="8" r="4"/>
+                      <path d="M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                </div>
 
-        <!-- TAB 3: الإيصالات -->
-        <div id="admin-tab-receipts" class="admin-tab-pane hidden">
-          <div id="admin-receipts-grid" class="receipts-grid">
-            <div class="empty-cell">لا توجد إيصالات مرفوعة حالياً.</div>
-          </div>
-        </div>
+                <div class="admin-notification-bell">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
+                  </svg>
+                  <span class="bell-red-dot"></span>
+                </div>
+              </div>
 
-        <!-- TAB 4: التقارير -->
-        <div id="admin-tab-reports" class="admin-tab-pane hidden">
-          <div class="reports-summary-bar" id="reports-summary-bar">
-            <div class="report-pill"><span>إجمالي المسجلين:</span> <strong id="rep-total-reg">0</strong></div>
-            <div class="report-pill"><span>الفترة الأولى (9:30–11:30):</span> <strong id="rep-shift1-summary">0 (0 د.ل)</strong></div>
-            <div class="report-pill"><span>الفترة الثانية (11:30–1:30):</span> <strong id="rep-shift2-summary">0 (0 د.ل)</strong></div>
-            <div class="report-pill"><span>إجمالي المبالغ المالية:</span> <strong id="rep-total-amount">0 د.ل</strong></div>
-          </div>
-
-          <!-- Shift Report Table -->
-          <div class="admin-subbox" style="margin-bottom: 18px;">
-            <h3 class="subbox-title">تقرير التسجيلات والمبالغ المالية حسب الفترة الزمنية</h3>
-            <div class="table-scroll">
-              <table class="clean-table">
-                <thead>
-                  <tr>
-                    <th>الفترة الزمنية</th>
-                    <th>الوقت</th>
-                    <th>عدد المشاركين المسجلين</th>
-                    <th>طلبة</th>
-                    <th>دكاترة</th>
-                    <th>إجمالي المبالغ المالية للفترة</th>
-                  </tr>
-                </thead>
-                <tbody id="report-by-shift-tbody">
-                  <tr><td colspan="6" class="empty-cell">لا توجد بيانات.</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="admin-section-grid">
-            <div class="admin-subbox">
-              <h3 class="subbox-title">تقرير التسجيلات حسب الأيام والفترات</h3>
-              <div class="table-scroll">
-                <table class="clean-table">
-                  <thead>
-                    <tr>
-                      <th>اليوم</th>
-                      <th>الفترة الأولى</th>
-                      <th>الفترة الثانية</th>
-                      <th>إجمالي اليوم</th>
-                      <th>إجمالي المبلغ</th>
-                    </tr>
-                  </thead>
-                  <tbody id="report-by-day-tbody">
-                    <tr><td colspan="5" class="empty-cell">لا توجد بيانات.</td></tr>
-                  </tbody>
-                </table>
+              <!-- Mobile Topbar Toggle -->
+              <div class="admin-mobile-top-row">
+                <button type="button" class="mobile-sidebar-toggle-btn" id="mobile-sidebar-toggle-btn" aria-label="قائمة اللوحة">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/>
+                  </svg>
+                </button>
+                <div class="mobile-top-brand-text">
+                  <strong>مؤتمر ICDS الدولي</strong>
+                  <span>النسخة الرابعة</span>
+                </div>
               </div>
             </div>
 
-            <div class="admin-subbox">
-              <h3 class="subbox-title">تقرير التسجيلات والمبالغ حسب المشرفين</h3>
-              <div class="table-scroll">
-                <table class="clean-table">
+            <!-- Page Title Header (matching exact Arabic heading in reference) -->
+            <div class="rec-page-header">
+              <div class="rec-page-title-row">
+                <div class="rec-title-clipboard-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke="#066a71" stroke-width="2.3">
+                    <path d="M10 6h12v3H10z"/>
+                    <rect x="6" y="8" width="20" height="20" rx="3.5"/>
+                    <path d="M12 15h8M12 19h8M12 23h5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <h1 class="rec-main-title">سجل التسجيلات</h1>
+              </div>
+              <p class="rec-sub-title">عرض جميع التسجيلات حسب التاريخ والفترة الزمنية.</p>
+            </div>
+
+            <!-- SECTION A: RECORD FILTERS BAR (DATE, DAY, PERIOD & SEARCH BUTTON) -->
+            <div class="rec-filters-card">
+              <div class="rec-filters-grid">
+                <!-- Date Input -->
+                <div class="rec-filter-group">
+                  <label class="rec-filter-label" for="filter-reg-date">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="rec-lbl-icon">
+                      <rect x="3" y="4" width="18" height="18" rx="2"/>
+                      <path d="M16 2v4M8 2v4M3 10h18"/>
+                    </svg>
+                    <span>التاريخ</span>
+                  </label>
+                  <div class="rec-input-box">
+                    <input type="date" id="filter-reg-date" class="rec-date-input" />
+                  </div>
+                </div>
+
+                <!-- Registration Day Dropdown -->
+                <div class="rec-filter-group">
+                  <label class="rec-filter-label" for="filter-reg-day">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="rec-lbl-icon">
+                      <circle cx="12" cy="12" r="9"/>
+                      <path d="M12 7v5l3 3"/>
+                    </svg>
+                    <span>اليوم</span>
+                  </label>
+                  <div class="rec-select-box">
+                    <select id="filter-reg-day" class="rec-select">
+                      <option value="">جميع الأيام</option>
+                      <option value="الأحد">الأحد</option>
+                      <option value="الاثنين">الاثنين</option>
+                      <option value="الثلاثاء">الثلاثاء</option>
+                      <option value="الأربعاء">الأربعاء</option>
+                      <option value="الخميس">الخميس</option>
+                    </select>
+                    <span class="rec-select-arrow">▼</span>
+                  </div>
+                </div>
+
+                <!-- Session / Shift Dropdown -->
+                <div class="rec-filter-group">
+                  <label class="rec-filter-label" for="filter-reg-shift">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="rec-lbl-icon">
+                      <circle cx="12" cy="12" r="9"/>
+                      <path d="M12 6v6l4 2"/>
+                    </svg>
+                    <span>الفترة</span>
+                  </label>
+                  <div class="rec-select-box">
+                    <select id="filter-reg-shift" class="rec-select">
+                      <option value="">جميع الفترات</option>
+                      <option value="1">الفترة الأولى (9:30 ص – 11:30 ص)</option>
+                      <option value="2">الفترة الثانية (11:30 ص – 1:30 م)</option>
+                    </select>
+                    <span class="rec-select-arrow">▼</span>
+                  </div>
+                </div>
+
+                <!-- Submit "عرض السجل" Button matching reference -->
+                <div class="rec-filter-btn-col">
+                  <button type="button" class="rec-submit-filter-btn" id="btn-apply-rec-filters">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" class="rec-btn-search-icon">
+                      <circle cx="11" cy="11" r="7"/>
+                      <path d="M21 21l-4.35-4.35" stroke-linecap="round"/>
+                    </svg>
+                    <span>عرض السجل</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION B: SUMMARY STATISTICS 4 CARDS ROW matching reference -->
+            <div class="rec-stats-row">
+              <!-- Card 1: إجمالي المسجلين (Green tint) -->
+              <div class="rec-stat-card stat-card-green">
+                <div class="rec-stat-content">
+                  <span class="rec-stat-title">إجمالي المسجلين</span>
+                  <div class="rec-stat-value-wrap">
+                    <strong class="rec-stat-number" id="card-total-participants">0</strong>
+                    <span class="rec-stat-unit">مشارك</span>
+                  </div>
+                </div>
+                <div class="rec-stat-icon-wrap icon-green" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Card 2: الفترة الأولى (Teal tint) -->
+              <div class="rec-stat-card stat-card-teal">
+                <div class="rec-stat-content">
+                  <span class="rec-stat-title">الفترة الأولى</span>
+                  <div class="rec-stat-value-wrap">
+                    <strong class="rec-stat-number" id="card-shift1-count">0</strong>
+                    <span class="rec-stat-unit">تسجيل</span>
+                  </div>
+                </div>
+                <div class="rec-stat-icon-wrap icon-teal" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Card 3: الفترة الثانية (Blue tint) -->
+              <div class="rec-stat-card stat-card-blue">
+                <div class="rec-stat-content">
+                  <span class="rec-stat-title">الفترة الثانية</span>
+                  <div class="rec-stat-value-wrap">
+                    <strong class="rec-stat-number" id="card-shift2-count">0</strong>
+                    <span class="rec-stat-unit">تسجيل</span>
+                  </div>
+                </div>
+                <div class="rec-stat-icon-wrap icon-blue" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Card 4: إجمالي المبالغ (Purple tint) -->
+              <div class="rec-stat-card stat-card-purple">
+                <div class="rec-stat-content">
+                  <span class="rec-stat-title">إجمالي المبالغ</span>
+                  <div class="rec-stat-value-wrap">
+                    <strong class="rec-stat-number" id="card-total-fees">0</strong>
+                    <span class="rec-stat-unit">د.ل</span>
+                  </div>
+                </div>
+                <div class="rec-stat-icon-wrap icon-purple" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION C: TOOLBAR (SEARCH BAR + CSV EXPORT + EXCEL EXPORT) matching reference -->
+            <div class="rec-table-toolbar">
+              <!-- Search box (Right side in RTL) -->
+              <div class="rec-search-box">
+                <input
+                  type="text"
+                  id="rec-quick-search"
+                  class="rec-search-input"
+                  placeholder="بحث بالاسم أو رقم التسجيل ..."
+                  autocomplete="off"
+                />
+                <span class="rec-search-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="7"/>
+                    <path d="M21 21l-4.35-4.35" stroke-linecap="round"/>
+                  </svg>
+                </span>
+              </div>
+
+              <!-- Export Buttons (Left side in RTL) -->
+              <div class="rec-toolbar-actions">
+                <button type="button" class="rec-export-btn rec-btn-csv" id="btn-export-csv">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="rec-exp-icon">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                  </svg>
+                  <span>تصدير CSV</span>
+                </button>
+
+                <button type="button" class="rec-export-btn rec-btn-excel" id="btn-export-excel">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="rec-exp-icon">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <path d="M9 8l6 8M15 8l-6 8"/>
+                  </svg>
+                  <span>تصدير Excel</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- SECTION D: DESKTOP TABLE VIEW matching exact columns of reference -->
+            <div class="rec-table-card desktop-only-table" id="admin-tab-registrations">
+              <div class="rec-table-responsive">
+                <table class="rec-data-table" id="rec-data-table">
                   <thead>
                     <tr>
-                      <th>اسم المشرف</th>
-                      <th>الفترة الأولى</th>
-                      <th>الفترة الثانية</th>
-                      <th>إجمالي التسجيلات</th>
-                      <th>إجمالي المبالغ المالية</th>
+                      <th style="width: 4%;">#</th>
+                      <th style="width: 17%;">الاسم بالعربي</th>
+                      <th style="width: 15%;">الاسم بالإنجليزي</th>
+                      <th style="width: 8%;">نوع المشارك</th>
+                      <th style="width: 9%;">السنة الدراسية</th>
+                      <th style="width: 8%;">رسوم التسجيل</th>
+                      <th style="width: 12%;">المشرف</th>
+                      <th style="width: 11%;">الفترة</th>
+                      <th style="width: 8%;">وقت التسجيل</th>
+                      <th style="width: 8%;">الإيصال</th>
                     </tr>
                   </thead>
-                  <tbody id="report-by-sup-tbody">
-                    <tr><td colspan="5" class="empty-cell">لا توجد بيانات.</td></tr>
+                  <tbody id="rec-table-body">
+                    <tr><td colspan="10" class="empty-cell">لا توجد تسجيلات مطابقة للشروط المحددة.</td></tr>
                   </tbody>
                 </table>
               </div>
+
+              <!-- Pagination Footer matching reference -->
+              <div class="rec-pagination-bar">
+                <div class="rec-page-size-picker">
+                  <span>عرض</span>
+                  <select id="rec-page-size-select" class="rec-page-select">
+                    <option value="10" selected>10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                  <span id="rec-page-total-label">من 0 نتيجة</span>
+                </div>
+
+                <div class="rec-pagination-controls" id="rec-pagination-controls">
+                  <button type="button" class="rec-pag-btn" id="rec-page-first" title="البداية">«</button>
+                  <button type="button" class="rec-pag-btn" id="rec-page-prev" title="السابق">‹</button>
+                  <div class="rec-pag-numbers" id="rec-pag-numbers">
+                    <button type="button" class="rec-pag-btn active">1</button>
+                  </div>
+                  <button type="button" class="rec-pag-btn" id="rec-page-next" title="التالي">›</button>
+                  <button type="button" class="rec-pag-btn" id="rec-page-last" title="النهاية">»</button>
+                </div>
+              </div>
             </div>
+
+            <!-- SECTION E: MOBILE CARDS VIEW matching mobile smartphone reference -->
+            <div class="mobile-only-cards-container" id="mobile-cards-container">
+              <div class="empty-cell">لا توجد تسجيلات مطابقة للشروط المحددة.</div>
+            </div>
+
+            <!-- Mobile Pagination Footer -->
+            <div class="mobile-pagination-wrap" id="mobile-pagination-wrap">
+              <div class="rec-pagination-controls" id="mobile-pagination-controls">
+                <!-- Injected via app.js -->
+              </div>
+            </div>
+
+            <!-- TAB: إدارة المشرفين والفترات الزمنية -->
+            <div id="admin-tab-supervisors" class="admin-tab-pane hidden" style="margin-top:20px;">
+              <div class="admin-section-grid">
+                <!-- Right Column: Supervisors List & Add Form -->
+                <div class="admin-subbox">
+                  <h3 class="subbox-title">إضافة وإدارة أسماء المشرفين</h3>
+                  <form id="add-supervisor-form" class="inline-add-form">
+                    <input type="text" id="new-sup-name" class="form-input plain-input" placeholder="اسم المشرف الكامل" required />
+                    <button type="submit" class="teal-action-btn">إضافة مشرف</button>
+                  </form>
+
+                  <div class="supervisors-list-wrap">
+                    <table class="clean-table">
+                      <thead>
+                        <tr>
+                          <th>اسم المشرف</th>
+                          <th>الحالة</th>
+                          <th>التسجيلات</th>
+                          <th>إجراءات</th>
+                        </tr>
+                      </thead>
+                      <tbody id="admin-supervisors-tbody">
+                        <tr><td colspan="4" class="empty-cell">لا يوجد مشرفون مضافون حالياً.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Left Column: Assign 4 Supervisors Per Day Across 2 Shifts -->
+                <div class="admin-subbox">
+                  <h3 class="subbox-title">توزيع المشرفين على الأيام والفترات الزمنية (4 مشرفين لكل يوم / مشرفان لكل فترة)</h3>
+                  <div id="admin-days-assignment-list" class="days-assignment-list"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB: التقارير والإحصائيات -->
+            <div id="admin-tab-reports" class="admin-tab-pane hidden" style="margin-top:20px;">
+              <div class="reports-summary-bar" id="reports-summary-bar">
+                <div class="report-pill"><span>إجمالي المسجلين:</span> <strong id="rep-total-reg">0</strong></div>
+                <div class="report-pill"><span>الفترة الأولى (9:30–11:30):</span> <strong id="rep-shift1-summary">0 (0 د.ل)</strong></div>
+                <div class="report-pill"><span>الفترة الثانية (11:30–1:30):</span> <strong id="rep-shift2-summary">0 (0 د.ل)</strong></div>
+                <div class="report-pill"><span>إجمالي المبالغ المالية:</span> <strong id="rep-total-amount">0 د.ل</strong></div>
+              </div>
+
+              <!-- Shift Report Table -->
+              <div class="admin-subbox" style="margin-bottom: 18px;">
+                <h3 class="subbox-title">تقرير التسجيلات والمبالغ المالية حسب الفترة الزمنية</h3>
+                <div class="table-scroll">
+                  <table class="clean-table">
+                    <thead>
+                      <tr>
+                        <th>الفترة الزمنية</th>
+                        <th>الوقت</th>
+                        <th>عدد المشاركين المسجلين</th>
+                        <th>طلبة</th>
+                        <th>دكاترة</th>
+                        <th>إجمالي المبالغ المالية للفترة</th>
+                      </tr>
+                    </thead>
+                    <tbody id="report-by-shift-tbody">
+                      <tr><td colspan="6" class="empty-cell">لا توجد بيانات.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="admin-section-grid">
+                <div class="admin-subbox">
+                  <h3 class="subbox-title">تقرير التسجيلات حسب الأيام والفترات</h3>
+                  <div class="table-scroll">
+                    <table class="clean-table">
+                      <thead>
+                        <tr>
+                          <th>اليوم</th>
+                          <th>الفترة الأولى</th>
+                          <th>الفترة الثانية</th>
+                          <th>إجمالي اليوم</th>
+                          <th>إجمالي المبلغ</th>
+                        </tr>
+                      </thead>
+                      <tbody id="report-by-day-tbody">
+                        <tr><td colspan="5" class="empty-cell">لا توجد بيانات.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="admin-subbox">
+                  <h3 class="subbox-title">تقرير التسجيلات والمبالغ حسب المشرفين</h3>
+                  <div class="table-scroll">
+                    <table class="clean-table">
+                      <thead>
+                        <tr>
+                          <th>اسم المشرف</th>
+                          <th>الفترة الأولى</th>
+                          <th>الفترة الثانية</th>
+                          <th>إجمالي التسجيلات</th>
+                          <th>إجمالي المبالغ المالية</th>
+                        </tr>
+                      </thead>
+                      <tbody id="report-by-sup-tbody">
+                        <tr><td colspan="5" class="empty-cell">لا توجد بيانات.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB: استيراد البيانات -->
+            <div id="admin-tab-import" class="admin-tab-pane hidden" style="margin-top:20px;">
+              <div class="admin-subbox">
+                <h3 class="subbox-title">استيراد بيانات سابقة (Excel XLSX / CSV)</h3>
+                <p class="import-note">ارفع ملف البيانات السابقة لمعاينتها والتحقق من التكرار قبل حفظها في قاعدة البيانات.</p>
+                <div class="import-controls">
+                  <input type="file" id="import-file-input" accept=".xlsx,.xls,.csv" class="sr-only-file" />
+                  <button type="button" class="receipt-upload-btn" id="import-choose-btn">اختيار ملف Excel أو CSV</button>
+                  <button type="button" class="teal-action-btn hidden" id="import-confirm-btn">تأكيد استيراد البيانات</button>
+                </div>
+                <div id="import-preview-area" class="import-preview-area hidden"></div>
+              </div>
+            </div>
+
+            <!-- TAB: الإعدادات -->
+            <div id="admin-tab-settings" class="admin-tab-pane hidden" style="margin-top:20px;">
+              <div class="admin-subbox">
+                <h3 class="subbox-title">إعدادات مؤتمر ICDS (النسخة الرابعة)</h3>
+                <p class="import-note">التحكم في رسوم التسجيل، مواعيد الفترات، وإغلاق أو فتح التسجيل العام.</p>
+                <div style="font-size: 13.5px; color: #475569; line-height: 1.8;">
+                  <div>• رسوم الطالب: <strong>30 د.ل</strong></div>
+                  <div>• رسوم الدكتور: <strong>60 د.ل</strong></div>
+                  <div>• الفترة الأولى: <strong>9:30 ص – 11:30 ص</strong></div>
+                  <div>• الفترة الثانية: <strong>11:30 ص – 1:30 م</strong></div>
+                  <div>• رمز الدخول الموحد للأدمن: <strong>00icds4</strong></div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
-
-        <!-- TAB 5: استيراد البيانات -->
-        <div id="admin-tab-import" class="admin-tab-pane hidden">
-          <div class="admin-subbox">
-            <h3 class="subbox-title">استيراد بيانات سابقة (Excel XLSX / CSV)</h3>
-            <p class="import-note">ارفع ملف البيانات السابقة لمعاينتها والتحقق من التكرار قبل حفظها في قاعدة البيانات.</p>
-            <div class="import-controls">
-              <input type="file" id="import-file-input" accept=".xlsx,.xls,.csv" class="sr-only-file" />
-              <button type="button" class="receipt-upload-btn" id="import-choose-btn">اختيار ملف Excel أو CSV</button>
-              <button type="button" class="teal-action-btn hidden" id="import-confirm-btn">تأكيد استيراد البيانات</button>
-            </div>
-            <div id="import-preview-area" class="import-preview-area hidden"></div>
-          </div>
-        </div>
-
       </div>
     </section>
 

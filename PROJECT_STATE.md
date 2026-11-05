@@ -12,36 +12,20 @@
   - **Frontend**: RTL Arabic Responsive UI (`index.html`, `styles.css`, `app.js`, mirrored in `public/`) replicating the exact Desktop & Mobile visual design from the user's reference image.
 
 ## 2. Done & Verified
-- **Unified Supervisor Access Code (`00icds4`, Case-Insensitive, Zero Username)**:
-  - Completely removed the `Username` requirement for supervisors.
-  - Added the **Supervisor Unified Access Gate (`#supervisor-gate-card`)** before entering the Registration Interface.
-  - Accepts the unified code `00icds4` case-insensitively (`00icds4`, `00ICDS4`, `00IcDs4`).
-  - Correct code directly unlocks the registration interface; incorrect code presents a clear Arabic alert.
-- **Official ICDS 2026 Supervisors Schedule Seeded & Verified in Cloud PostgreSQL**:
-  - **الأحد**:
-    - الفترة الأولى (9:30 ص – 11:30 ص): `هنا أبو حسانة` ، `أروى فوزي`
-    - الفترة الثانية (11:30 ص – 1:30 م): `آرام القرني` ، `وديدة السكوني`
-  - **الاثنين**:
-    - الفترة الأولى (9:30 ص – 11:30 ص): `عبدالمؤمن بن عون` ، `أحمد المشاي`
-    - الفترة الثانية (11:30 ص – 1:30 م): `منة إنيبة` ، `وعد القماطي`
-  - **الثلاثاء**:
-    - الفترة الأولى (9:30 ص – 11:30 ص): `سلمى المراعيش` ، `شهد التويبي`
-    - الفترة الثانية (11:30 ص – 1:30 م): `ملك إنيبة` ، `يقين بالقاسم`
-  - **الأربعاء**:
-    - الفترة الأولى (9:30 ص – 11:30 ص): `أميرة الرقيق` ، `منال يونس`
-    - الفترة الثانية (11:30 ص – 1:30 م): شاغر (`؟؟` قابل للتعيين من لوحة الأدمن) ، `الشيماء خالد`
-  - **الخميس**:
-    - الفترة الأولى (9:30 ص – 11:30 ص): `سلبيل صقر` ، `ميار الفريقة`
-    - الفترة الثانية (11:30 ص – 1:30 م): `منصور أحشاد` ، `معاذ المبروك`
-- **Zero Fake Participants**: The participants database remains 100% clean with `0` records, ready for live registration.
+- **Direct Supervisor Access (واجهة تسجيل المشاركين تفتح مباشرة)**:
+  - المشرفون يدخلون مباشرة إلى صفحة **تسجيل المشاركين** دون أي كلمة مرور أو رمز دخول أو اسم مستخدم.
+  - بمجرد فتح الموقع تظهر استمارة التسجيل مباشرة: يختار المشرف اليوم $\leftarrow$ يختار الفترة الزمنية $\leftarrow$ يختار اسمه مباشرة من قائمة المشرفين المخصصين.
+- **Unified Admin Code (`00icds4`, No Username)**:
+  - تم إلغاء خانة اسم المستخدم بالكامل من لوحة الأدمن.
+  - الدخول إلى **لوحة الأدمن** برمز الدخول الموحد فقط: `00icds4`.
+  - يقبل الرمز بحروف صغيرة أو كبيرة أو مختلطة (`00icds4` ، `00ICDS4` ، `00IcDs4`).
+- **Official ICDS 2026 Supervisors Schedule Seeded in Cloud PostgreSQL**:
+  - جميع المشرفين موزعين بدقة على الأيام الخمسة والفترتين الصباحية والمسائية.
 - **Files Touched**:
-  - `vps_icds_server.js`
-  - `database.js`
-  - `server.js`
   - `index.html` & `public/index.html`
   - `app.js` & `public/app.js`
-  - `seed_supervisors.sql`
+  - `server.js` & `vps_icds_server.js`
   - `PROJECT_STATE.md`
 
 ## 3. Immediate Next Step
-- The system is live, tested, and ready for supervisors to start registering participants using code `00icds4`, and for the admin to assign the open Wednesday slot or import past data whenever provided.
+- النظام جاهز بالكامل للتسجيل المباشر من المشرفين ولإدارة الأدمن باستخدام الرمز الموحد `00icds4`.

@@ -44,7 +44,15 @@
     supervisors: [],
     adminDays: [],
     participants: [],
-    pendingImportBatchId: null
+    pendingImportBatchId: null,
+    // Registration Records Pagination & Filters state
+    recPage: 1,
+    recPageSize: 10,
+    recFilteredList: [],
+    recDateFilter: '',
+    recDayFilter: '',
+    recShiftFilter: '',
+    recSearchQuery: ''
   };
 
   // Helper: API Request
@@ -466,7 +474,7 @@
   }
 
   // ==========================================================================
-  // 6. ADMIN PANEL (5 CLEAN SECTIONS)
+  // 6. ADMIN PANEL (REDESIGNED REGISTRATION RECORDS WORKSPACE)
   // ==========================================================================
 
   async function initAdminView() {
@@ -477,9 +485,12 @@
     }
 
     try {
-      await loadAdminSupervisorsAndDays();
       els.adminLoginCard.classList.add('hidden');
       els.adminWorkspace.classList.remove('hidden');
+      await Promise.all([
+        loadAdminSupervisorsAndDays(),
+        loadAdminRegistrations()
+      ]);
     } catch (err) {
       state.adminToken = '';
       sessionStorage.removeItem('icds_admin_token');
@@ -489,19 +500,34 @@
   }
 
   function switchAdminTab(tabName) {
-    els.adminTabBtns.forEach((btn) => {
+    if (tabName === 'home') {
+      switchView('home');
+      return;
+    }
+
+    document.querySelectorAll('.admin-sidebar-nav-item').forEach((btn) => {
       btn.classList.toggle('active', btn.getAttribute('data-admin-tab') === tabName);
     });
 
-    const panes = ['supervisors', 'registrations', 'receipts', 'reports', 'import'];
+    // Sub-panes inside main canvas
+    const panes = ['registrations', 'supervisors', 'reports', 'import', 'settings'];
     panes.forEach((p) => {
       const el = document.getElementById(`admin-tab-${p}`);
       if (el) el.classList.toggle('hidden', p !== tabName);
     });
 
+    // Table and cards visibility toggle if switching away from registrations
+    const regTableCard = document.querySelector('.rec-table-card');
+    const mobileCardsContainer = document.getElementById('mobile-cards-container');
+    const mobilePaginationWrap = document.getElementById('mobile-pagination-wrap');
+    const isReg = tabName === 'registrations';
+
+    if (regTableCard) regTableCard.classList.toggle('hidden', !isReg);
+    if (mobileCardsContainer) mobileCardsContainer.classList.toggle('hidden', !isReg);
+    if (mobilePaginationWrap) mobilePaginationWrap.classList.toggle('hidden', !isReg);
+
     if (tabName === 'supervisors') loadAdminSupervisorsAndDays();
     if (tabName === 'registrations') loadAdminRegistrations();
-    if (tabName === 'receipts') loadAdminReceipts();
     if (tabName === 'reports') loadAdminReports();
   }
 
@@ -729,104 +755,324 @@
     }
   }
 
-  // 6.2 Registrations Management
+  // 6.2 Registrations Management (matching user reference redesign)
   async function loadAdminRegistrations() {
-    const search = (document.getElementById('filter-search')?.value || '').trim();
-    const dayId = document.getElementById('filter-day')?.value || '';
-    const shiftNum = document.getElementById('filter-shift')?.value || '';
-    const supId = document.getElementById('filter-supervisor')?.value || '';
-    const category = document.getElementById('filter-category')?.value || '';
-    const year = document.getElementById('filter-year')?.value || '';
+    const dateVal = (document.getElementById('filter-reg-date')?.value || state.recDateFilter || '').trim();
+    const dayVal = (document.getElementById('filter-reg-day')?.value || state.recDayFilter || '').trim();
+    const shiftVal = (document.getElementById('filter-reg-shift')?.value || state.recShiftFilter || '').trim();
+    const searchVal = (document.getElementById('rec-quick-search')?.value || state.recSearchQuery || '').trim();
+
+    state.recDateFilter = dateVal;
+    state.recDayFilter = dayVal;
+    state.recShiftFilter = shiftVal;
+    state.recSearchQuery = searchVal;
 
     const params = new URLSearchParams();
-    if (search) params.set('search', search);
-    if (dayId) params.set('day_id', dayId);
-    if (shiftNum) params.set('shift_number', shiftNum);
-    if (supId) params.set('supervisor_id', supId);
-    if (category) params.set('category', category);
-    if (year) params.set('academic_year', year);
+    if (searchVal) params.set('search', searchVal);
+    if (dateVal) params.set('date', dateVal);
+    if (dayVal) params.set('day', dayVal);
+    if (shiftVal) params.set('shift_number', shiftVal);
 
-    const data = await apiFetch(`/api/admin/participants?${params.toString()}`);
-    state.participants = data.participants || [];
-    renderAdminRegistrationsTable();
+    try {
+      const data = await apiFetch(`/api/admin/participants?${params.toString()}`);
+      state.participants = data.participants || [];
+      state.recFilteredList = state.participants;
+      updateAdminDashboardStatCards();
+      renderAdminRecordsUI();
+    } catch (err) {
+      console.error('Failed to load registrations:', err);
+    }
   }
 
-  function renderAdminRegistrationsTable() {
-    const tbody = document.getElementById('admin-registrations-tbody');
+  function updateAdminDashboardStatCards() {
+    const list = state.participants || [];
+    const totalParticipants = list.length;
+    const shift1Count = list.filter((p) => Number(p.shift_number || 1) === 1).length;
+    const shift2Count = list.filter((p) => Number(p.shift_number) === 2).length;
+    const totalFees = list.reduce((acc, p) => acc + Number(p.fee_amount || 0), 0);
+
+    const cTotal = document.getElementById('card-total-participants');
+    const cShift1 = document.getElementById('card-shift1-count');
+    const cShift2 = document.getElementById('card-shift2-count');
+    const cFees = document.getElementById('card-total-fees');
+
+    if (cTotal) cTotal.textContent = totalParticipants.toLocaleString('en-US');
+    if (cShift1) cShift1.textContent = shift1Count.toLocaleString('en-US');
+    if (cShift2) cShift2.textContent = shift2Count.toLocaleString('en-US');
+    if (cFees) cFees.textContent = totalFees.toLocaleString('en-US');
+  }
+
+  function renderAdminRecordsUI() {
+    renderDesktopRecordsTable();
+    renderMobileRecordsCards();
+    renderRecordsPagination();
+  }
+
+  function renderDesktopRecordsTable() {
+    const tbody = document.getElementById('rec-table-body');
     if (!tbody) return;
 
-    if (state.participants.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="12" class="empty-cell">لا توجد تسجيلات مطابقة.</td></tr>';
+    const list = state.recFilteredList || [];
+    if (list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="10" class="empty-cell">لا توجد تسجيلات مطابقة للشروط المحددة.</td></tr>';
       return;
     }
 
-    tbody.innerHTML = state.participants
-      .map((p) => {
+    const startIdx = (state.recPage - 1) * state.recPageSize;
+    const pageItems = list.slice(startIdx, startIdx + state.recPageSize);
+
+    tbody.innerHTML = pageItems
+      .map((p, idx) => {
+        const rowNum = startIdx + idx + 1;
         const receiptUrl = `${API_BASE}/api/receipts/${p.id}/image?admin_token=${encodeURIComponent(state.adminToken)}`;
-        const shiftLabel = p.shift_name
-          ? `${p.shift_name}${p.shift_time ? ` (${p.shift_time})` : ''}`
-          : Number(p.shift_number) === 2
-          ? 'الفترة الثانية (11:30 ص – 1:30 م)'
-          : 'الفترة الأولى (9:30 ص – 11:30 ص)';
-        const hasReceipt = p.has_receipt || p.has_receipt_image;
+        const hasReceipt = Boolean(p.has_receipt || p.has_receipt_image);
+        const isDoctor = p.category === 'doctor';
+        const isShift2 = Number(p.shift_number) === 2;
+
+        const catBadge = isDoctor
+          ? '<span class="badge-category-doctor">دكتور</span>'
+          : '<span class="badge-category-student">طالب</span>';
+
+        const shiftBadge = isShift2
+          ? '<span class="badge-shift-2">الفترة الثانية</span>'
+          : '<span class="badge-shift-1">الفترة الأولى</span>';
+
+        const receiptCell = hasReceipt
+          ? `
+            <div class="receipt-cell-thumb-wrap" data-view-receipt="${receiptUrl}" data-title="${p.name_ar}">
+              <img src="${receiptUrl}" alt="إيصال" class="receipt-mini-thumb" />
+              <div class="receipt-eye-overlay" title="عرض الإيصال">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </div>
+            </div>
+          `
+          : '<span style="color:#94a3b8;">—</span>';
 
         return `
-        <tr>
-          <td><strong>${p.registration_number || p.id}</strong></td>
-          <td>${p.name_ar}</td>
-          <td dir="ltr">${p.name_en}</td>
-          <td>${p.category_label || (p.category === 'student' ? 'طالب' : 'دكتور')}</td>
-          <td>${p.academic_year || '—'}</td>
-          <td>${p.fee_amount} د.ل</td>
-          <td>${p.registration_day_name || '—'}</td>
-          <td>${shiftLabel}</td>
-          <td>${p.supervisor_name || '—'}</td>
-          <td dir="ltr">${p.registration_date || ''} ${p.registration_time || ''}</td>
-          <td>
-            ${
-              hasReceipt
-                ? `<button type="button" class="table-mini-btn" data-view-receipt="${receiptUrl}" data-title="${p.name_ar}">عرض الإيصال</button>`
-                : '—'
-            }
-          </td>
-          <td>
-            <button type="button" class="table-mini-btn" data-edit-p="${p.id}">تعديل</button>
-            <button type="button" class="table-mini-btn danger" data-del-p="${p.id}">حذف</button>
-          </td>
-        </tr>
-      `;
+          <tr>
+            <td><strong>${rowNum}</strong></td>
+            <td><strong>${p.name_ar}</strong></td>
+            <td dir="ltr" style="font-weight:600; color:#475569;">${p.name_en || '—'}</td>
+            <td>${catBadge}</td>
+            <td>${p.academic_year || '—'}</td>
+            <td><strong>${p.fee_amount} د.ل</strong></td>
+            <td>${p.supervisor_name || '—'}</td>
+            <td>${shiftBadge}</td>
+            <td dir="ltr" style="font-size:12.5px; color:#475569;">${p.registration_time || '—'}</td>
+            <td>${receiptCell}</td>
+          </tr>
+        `;
       })
       .join('');
 
-    tbody.querySelectorAll('[data-view-receipt]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        openLightbox(btn.getAttribute('data-view-receipt'), `إيصال الدفع – ${btn.getAttribute('data-title')}`);
+    tbody.querySelectorAll('[data-view-receipt]').forEach((wrap) => {
+      wrap.addEventListener('click', () => {
+        openLightbox(wrap.getAttribute('data-view-receipt'), `إيصال الدفع – ${wrap.getAttribute('data-title')}`);
       });
     });
+  }
 
-    tbody.querySelectorAll('[data-edit-p]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const pId = Number(btn.getAttribute('data-edit-p'));
-        const p = state.participants.find((item) => Number(item.id) === pId);
-        if (!p) return;
-        document.getElementById('edit-p-id').value = p.id;
-        document.getElementById('edit-p-name-ar').value = p.name_ar;
-        document.getElementById('edit-p-name-en').value = p.name_en;
-        document.getElementById('edit-p-category').value = p.category;
-        document.getElementById('edit-p-year').value = p.academic_year || '';
-        document.getElementById('edit-p-year-wrap').classList.toggle('hidden', p.category !== 'student');
-        els.editModal.classList.remove('hidden');
-      });
-    });
+  function renderMobileRecordsCards() {
+    const container = document.getElementById('mobile-cards-container');
+    if (!container) return;
 
-    tbody.querySelectorAll('[data-del-p]').forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        const pId = btn.getAttribute('data-del-p');
-        if (!window.confirm('هل أنت متأكد من حذف هذا التسجيل؟')) return;
-        await apiFetch(`/api/admin/participants/${pId}`, { method: 'DELETE' });
-        await loadAdminRegistrations();
+    const list = state.recFilteredList || [];
+    if (list.length === 0) {
+      container.innerHTML = '<div class="empty-cell">لا توجد تسجيلات مطابقة للشروط المحددة.</div>';
+      return;
+    }
+
+    const startIdx = (state.recPage - 1) * state.recPageSize;
+    const pageItems = list.slice(startIdx, startIdx + state.recPageSize);
+
+    container.innerHTML = pageItems
+      .map((p, idx) => {
+        const rowNum = startIdx + idx + 1;
+        const receiptUrl = `${API_BASE}/api/receipts/${p.id}/image?admin_token=${encodeURIComponent(state.adminToken)}`;
+        const hasReceipt = Boolean(p.has_receipt || p.has_receipt_image);
+        const isShift2 = Number(p.shift_number) === 2;
+
+        const shiftBadge = isShift2
+          ? '<span class="badge-shift-2">الفترة الثانية</span>'
+          : '<span class="badge-shift-1">الفترة الأولى</span>';
+
+        const receiptThumb = hasReceipt
+          ? `
+            <div class="mobile-rec-thumb-wrap" data-view-receipt="${receiptUrl}" data-title="${p.name_ar}">
+              <img src="${receiptUrl}" alt="إيصال" class="mobile-rec-thumb" />
+              <div class="receipt-eye-overlay">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </div>
+            </div>
+          `
+          : '<div style="width:44px; height:48px; background:#f1f5f9; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:11px;">—</div>';
+
+        return `
+          <div class="mobile-rec-card">
+            <div class="mobile-rec-left-info">
+              ${receiptThumb}
+              <div class="mobile-rec-time" dir="ltr">${p.registration_time || ''}</div>
+              ${shiftBadge}
+            </div>
+
+            <div class="mobile-rec-right-info">
+              <div class="mobile-rec-names">
+                <span class="mobile-rec-ar">${p.name_ar}</span>
+                <span class="mobile-rec-en" dir="ltr">${p.name_en}</span>
+              </div>
+              <div class="mobile-rec-index">${rowNum}</div>
+            </div>
+          </div>
+        `;
+      })
+      .join('');
+
+    container.querySelectorAll('[data-view-receipt]').forEach((wrap) => {
+      wrap.addEventListener('click', () => {
+        openLightbox(wrap.getAttribute('data-view-receipt'), `إيصال الدفع – ${wrap.getAttribute('data-title')}`);
       });
     });
+  }
+
+  function renderRecordsPagination() {
+    const list = state.recFilteredList || [];
+    const totalCount = list.length;
+    const totalPages = Math.ceil(totalCount / state.recPageSize) || 1;
+
+    if (state.recPage > totalPages) state.recPage = totalPages;
+    if (state.recPage < 1) state.recPage = 1;
+
+    const totalLabel = document.getElementById('rec-page-total-label');
+    if (totalLabel) totalLabel.textContent = `من ${totalCount} نتيجة`;
+
+    const numbersBox = document.getElementById('rec-pag-numbers');
+    const mobileNumbersBox = document.getElementById('mobile-pagination-controls');
+
+    const buildPaginationHtml = () => {
+      let html = '';
+      const maxPagesToShow = 5;
+      let startPage = Math.max(1, state.recPage - Math.floor(maxPagesToShow / 2));
+      let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+      if (endPage - startPage + 1 < maxPagesToShow) {
+        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+      }
+
+      for (let p = startPage; p <= endPage; p++) {
+        const isActive = p === state.recPage ? 'active' : '';
+        html += `<button type="button" class="rec-pag-btn ${isActive}" data-goto-page="${p}">${p}</button>`;
+      }
+      return html;
+    };
+
+    if (numbersBox) {
+      numbersBox.innerHTML = buildPaginationHtml();
+      numbersBox.querySelectorAll('[data-goto-page]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.recPage = Number(btn.getAttribute('data-goto-page'));
+          renderAdminRecordsUI();
+        });
+      });
+    }
+
+    if (mobileNumbersBox) {
+      mobileNumbersBox.innerHTML = `
+        <button type="button" class="rec-pag-btn" id="m-rec-prev" ${state.recPage === 1 ? 'disabled' : ''}>‹</button>
+        ${buildPaginationHtml()}
+        <button type="button" class="rec-pag-btn" id="m-rec-next" ${state.recPage === totalPages ? 'disabled' : ''}>›</button>
+      `;
+
+      mobileNumbersBox.querySelectorAll('[data-goto-page]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.recPage = Number(btn.getAttribute('data-goto-page'));
+          renderAdminRecordsUI();
+        });
+      });
+
+      const mPrev = document.getElementById('m-rec-prev');
+      const mNext = document.getElementById('m-rec-next');
+      if (mPrev) {
+        mPrev.addEventListener('click', () => {
+          if (state.recPage > 1) {
+            state.recPage--;
+            renderAdminRecordsUI();
+          }
+        });
+      }
+      if (mNext) {
+        mNext.addEventListener('click', () => {
+          if (state.recPage < totalPages) {
+            state.recPage++;
+            renderAdminRecordsUI();
+          }
+        });
+      }
+    }
+
+    const firstBtn = document.getElementById('rec-page-first');
+    const prevBtn = document.getElementById('rec-page-prev');
+    const nextBtn = document.getElementById('rec-page-next');
+    const lastBtn = document.getElementById('rec-page-last');
+
+    if (firstBtn) firstBtn.disabled = state.recPage === 1;
+    if (prevBtn) prevBtn.disabled = state.recPage === 1;
+    if (nextBtn) nextBtn.disabled = state.recPage === totalPages;
+    if (lastBtn) lastBtn.disabled = state.recPage === totalPages;
+  }
+
+  // Export functions (CSV & Excel)
+  function exportFilteredToCSV() {
+    const list = state.recFilteredList || [];
+    if (list.length === 0) {
+      window.alert('لا توجد بيانات لتصديرها.');
+      return;
+    }
+
+    const headers = ['#', 'الاسم بالعربي', 'الاسم بالإنجليزي', 'نوع المشارك', 'السنة الدراسية', 'رسوم التسجيل', 'المشرف', 'الفترة', 'وقت التسجيل', 'التاريخ', 'رقم التسجيل'];
+    const rows = list.map((p, idx) => [
+      idx + 1,
+      `"${p.name_ar || ''}"`,
+      `"${p.name_en || ''}"`,
+      `"${p.category === 'student' ? 'طالب' : 'دكتور'}"`,
+      `"${p.academic_year || ''}"`,
+      p.fee_amount || 0,
+      `"${p.supervisor_name || ''}"`,
+      `"${p.shift_name || (Number(p.shift_number) === 2 ? 'الفترة الثانية' : 'الفترة الأولى')}"`,
+      `"${p.registration_time || ''}"`,
+      `"${p.registration_date || ''}"`,
+      `"${p.registration_number || ''}"`
+    ]);
+
+    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `سجل_تسجيلات_ICDS4_${Date.now()}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportFilteredToExcel() {
+    const dateVal = state.recDateFilter || '';
+    const dayVal = state.recDayFilter || '';
+    const shiftVal = state.recShiftFilter || '';
+    const searchVal = state.recSearchQuery || '';
+
+    const params = new URLSearchParams();
+    params.set('format', 'xlsx');
+    params.set('admin_token', state.adminToken);
+    if (dateVal) params.set('date', dateVal);
+    if (dayVal) params.set('day', dayVal);
+    if (shiftVal) params.set('shift_number', shiftVal);
+    if (searchVal) params.set('search', searchVal);
+
+    window.open(`${API_BASE}/api/admin/participants-export?${params.toString()}`, '_blank');
   }
 
   // 6.3 Receipts Grid
@@ -1126,6 +1372,111 @@
         switchAdminTab(btn.getAttribute('data-admin-tab'));
       });
     });
+
+    // Sidebar navigation tabs
+    document.querySelectorAll('.admin-sidebar-nav-item').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        switchAdminTab(btn.getAttribute('data-admin-tab'));
+        const sidebar = document.getElementById('admin-sidebar');
+        if (sidebar) sidebar.classList.remove('mobile-open');
+      });
+    });
+
+    // Mobile sidebar toggle button
+    const mobileSidebarToggleBtn = document.getElementById('mobile-sidebar-toggle-btn');
+    if (mobileSidebarToggleBtn) {
+      mobileSidebarToggleBtn.addEventListener('click', () => {
+        const sidebar = document.getElementById('admin-sidebar');
+        if (sidebar) sidebar.classList.toggle('mobile-open');
+      });
+    }
+
+    // "عرض السجل" button click
+    const btnApplyFilters = document.getElementById('btn-apply-rec-filters');
+    if (btnApplyFilters) {
+      btnApplyFilters.addEventListener('click', () => {
+        state.recPage = 1;
+        loadAdminRegistrations();
+      });
+    }
+
+    // Auto-update registrations on date, day or shift changes
+    ['filter-reg-date', 'filter-reg-day', 'filter-reg-shift'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('change', () => {
+          state.recPage = 1;
+          loadAdminRegistrations();
+        });
+      }
+    });
+
+    // Quick search on input
+    const quickSearchInput = document.getElementById('rec-quick-search');
+    if (quickSearchInput) {
+      let debounceTimer = null;
+      quickSearchInput.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          state.recPage = 1;
+          loadAdminRegistrations();
+        }, 250);
+      });
+    }
+
+    // Page size select change
+    const pageSizeSelect = document.getElementById('rec-page-size-select');
+    if (pageSizeSelect) {
+      pageSizeSelect.addEventListener('change', (e) => {
+        state.recPageSize = Number(e.target.value) || 10;
+        state.recPage = 1;
+        renderAdminRecordsUI();
+      });
+    }
+
+    // First, Prev, Next, Last pagination buttons
+    const firstBtn = document.getElementById('rec-page-first');
+    const prevBtn = document.getElementById('rec-page-prev');
+    const nextBtn = document.getElementById('rec-page-next');
+    const lastBtn = document.getElementById('rec-page-last');
+
+    if (firstBtn) {
+      firstBtn.addEventListener('click', () => {
+        state.recPage = 1;
+        renderAdminRecordsUI();
+      });
+    }
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        if (state.recPage > 1) {
+          state.recPage--;
+          renderAdminRecordsUI();
+        }
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        const totalPages = Math.ceil((state.recFilteredList?.length || 0) / state.recPageSize) || 1;
+        if (state.recPage < totalPages) {
+          state.recPage++;
+          renderAdminRecordsUI();
+        }
+      });
+    }
+    if (lastBtn) {
+      lastBtn.addEventListener('click', () => {
+        const totalPages = Math.ceil((state.recFilteredList?.length || 0) / state.recPageSize) || 1;
+        state.recPage = totalPages;
+        renderAdminRecordsUI();
+      });
+    }
+
+    // Export Excel & CSV buttons
+    const btnExcel = document.getElementById('btn-export-excel');
+    if (btnExcel) btnExcel.addEventListener('click', exportFilteredToExcel);
+
+    const btnCsv = document.getElementById('btn-export-csv');
+    if (btnCsv) btnCsv.addEventListener('click', exportFilteredToCSV);
 
     // Add Supervisor Form
     const addSupForm = document.getElementById('add-supervisor-form');
