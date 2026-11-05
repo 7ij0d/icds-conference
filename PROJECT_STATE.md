@@ -1,25 +1,40 @@
-# PROJECT_STATE.md – نظام تسجيل وإدارة مؤتمر ICDS لطب الأسنان (النسخة الرابعة)
+# PROJECT_STATE.md — ICDS 4th Edition Dental Conference Registration & Management System
 
 ## 1. Project Overview & Tech Stack
-- **المشروع**: موقع تسجيل وإدارة المشاركين في مؤتمر ICDS الدولي لطب الأسنان – النسخة الرابعة (`ICDS 4th Edition`).
-- **مستودع GitHub**: `https://github.com/7ij0d/icds-conference`
-- **الرابط المباشر (GitHub Pages)**: `https://7ij0d.github.io/icds-conference/`
-- **قاعدة البيانات السحابية (Libyan Spider Cloud DB)**:
-  - متصل مباشرة بقاعدة بيانات PostgreSQL السحابية (`kuro_cloud`) على خادم **ليبيان سبايدر (`102.203.202.115`)** عبر `https://api.kurofangs.id.ly/icds/api/*`.
-  - خدمة الخادم السحابي: `icds-conference.service` (`/opt/icds-conference/server.js`).
+- **Project**: ICDS Dental Conference – 4th Edition (`مؤتمر ICDS الدولي لطب الأسنان – النسخة الرابعة`) Registration & Supervisor Management System.
+- **Live URLs**:
+  - **GitHub Pages (Primary Web URL)**: `https://7ij0d.github.io/icds-conference/`
+  - **GitHub Repository**: `https://github.com/7ij0d/icds-conference`
+  - **Libyan Spider Cloud API & PostgreSQL (`kuro_cloud`)**: `https://api.kurofangs.id.ly/icds/api/*`
+- **Architecture**:
+  - **Cloud Backend**: Node.js + Express + `pg` (`vps_icds_server.js`) running on Libyan Spider VPS (`102.203.202.115:3400` via `icds-conference.service` and Caddy HTTPS proxy at `/icds/*`), connected to PostgreSQL database `kuro_cloud` (`icds_*` tables) and `/var/www/kuro-uploads/icds-receipts/` for payment receipt storage.
+  - **Local Fallback Backend**: Node.js + Express + `better-sqlite3` (`server.js` + `database.js`) on `http://localhost:3400`.
+  - **Frontend**: RTL Arabic Responsive UI (`index.html`, `styles.css`, `app.js`, mirrored in `public/`) replicating the exact Desktop & Mobile visual design from the user's reference image.
+  - **Zero Pre-Populated Data**: Starts 100% clean without any fake participants, supervisors, receipts, or financial entries.
 
 ## 2. Done & Verified
-- **Exact UI Design Replication (مطابقة بصرية تامة للصورة المرجعية لسطح المكتب والهاتف)**:
-  - تحديث [`index.html`](file:///C:/Users/Taha/.gemini/antigravity/scratch/icds-conference/index.html)، [`styles.css`](file:///C:/Users/Taha/.gemini/antigravity/scratch/icds-conference/styles.css)، و [`app.js`](file:///C:/Users/Taha/.gemini/antigravity/scratch/icds-conference/app.js) (ونسخها في `public/`) لتطابق الصورة المرجعية بنسبة 100%:
-    - الهيدر الأبيض النظيف مع شعار `مؤتمر ICDS الدولي لطب الأسنان - النسخة الرابعة` وأيقونة السن، وروابط (`الرئيسية`، `تسجيل المشاركين` باللون التييل، `لوحة الأدمن`)، وقائمة الهاتف المدمجة.
-    - بطاقة تسجيل المشاركين البيضاء المتمركزة مع العلامة المائية الخفيفة للسن أعلى يسار البطاقة على سطح المكتب.
-    - أزرار اختيار يوم التسجيل الخمسة (`الأحد`، `الاثنين`، `الثلاثاء`، `الأربعاء`، `الخميس`).
-    - قائمة اختيار المشرف المنسدلة (`اختر اسم المشرف`) المرتبطة بقاعدة البيانات لعرض مشرفَي اليوم المختار فقط.
-    - حقلا `الاسم بالعربي *` و `الاسم بالانجليزي *` جنباً إلى جنب على سطح المكتب وعمودياً على الهاتف، مع الاقتصار على الحقول المطلوبة فقط دون أي حقول إضافية.
-    - اختيار `نوع المشارك *` (`طالب` / `دكتور`) وحقل `السنة الدراسية *` (`السنة الأولى` إلى `الامتياز`) الذي يظهر للطالب ويختفي عند اختيار دكتور.
-    - صندوق `رسوم التسجيل` (`30 د.ل` للطالب و `60 د.ل` للدكتور) وزر `إرفاق إيصال الدفع *` بإطار تييل، وزر `تسجيل المشارك` السفلي العريض.
-    - لوحة تحكم الأدمن بنفس الهوية البصرية البسيطة والنظيفة وتضم الأقسام الخمسة الأساسية فقط: (`إدارة المشرفين`، `إدارة التسجيلات`، `الإيصالات`، `التقارير`، `استيراد البيانات`).
-    - قاعدة البيانات نظيفة وفارغة تماماً من أي تسجيلات أو بيانات وهمية (`0` مشاركين، `0` مشرفين، `0` إيصالات).
+- **2-Shift / 4-Supervisors-Per-Day System (`نظام توزيع المشرفين على فترتين يومياً`)**:
+  - Divided each of the 5 registration days (`الأحد`, `الاثنين`, `الثلاثاء`, `الأربعاء`, `الخميس`) into **2 shifts (`فترتين زمنيتين`)** with **2 supervisors per shift (4 supervisors per day total)**:
+    - **الفترة الأولى (`shift_number = 1`)**: `9:30 صباحاً – 11:30 صباحاً` (`9:30 ص – 11:30 ص`) — Slots `1` & `2`.
+    - **الفترة الثانية (`shift_number = 2`)**: `11:30 صباحاً – 1:30 ظهراً` (`11:30 ص – 1:30 م`) — Slots `3` & `4`.
+  - **Registration Interface (`تسجيل المشاركين`)**:
+    - Step 1: Select Registration Day (`الأحد` – `الخميس`).
+    - Step 2: Select Shift (`الفترة الأولى: 9:30 صباحاً – 11:30 صباحاً` or `الفترة الثانية: 11:30 صباحاً – 1:30 ظهراً`).
+    - Step 3: Select Supervisor from the dropdown, which dynamically lists **only the 2 supervisors assigned to that specific day and shift**.
+    - Immutable snapshot stored with every participant registration (`shift_number`, `shift_name`, `shift_time`, `supervisor_name`, `registration_day_name`, `registration_date`, `registration_time`) so replacing or reassigning a supervisor later never alters past registrations.
+  - **Admin Panel (`لوحة الأدمن`)**:
+    - **Tab 1 (`إدارة المشرفين والفترات الزمنية`)**: Per-day schedule table (`الفترة | الوقت | المشرفون`) to assign/replace/move 2 supervisors for الفترة الأولى and 2 supervisors for الفترة الثانية on each day, plus editable shift timings and full supervisor CRUD.
+    - **Tab 2 (`إدارة التسجيلات`)**: Added filter by Shift (`الفترة الزمنية`) alongside Day, Supervisor, Category, and Academic Year, and displayed the shift badge on every registration record.
+    - **Tab 4 (`التقارير`)**: Detailed counts and financial totals by Day, by Shift (`الفترة الأولى` vs `الفترة الثانية`), and by Supervisor.
+- **Files Touched**:
+  - `supabase_icds_schema.sql`
+  - `vps_icds_server.js`
+  - `database.js`
+  - `server.js`
+  - `index.html` & `public/index.html`
+  - `styles.css` & `public/styles.css`
+  - `app.js` & `public/app.js`
+  - `PROJECT_STATE.md`
 
 ## 3. Immediate Next Step
-- النظام جاهز بالكامل لبدء إضافة المشرفين وتوزيعهم من لوحة الأدمن (`admin` / `icds2026`) وبدء التسجيل الفعلي للمشاركين، أو رفع ملف البيانات السابقة عند توفره من قسم `استيراد البيانات`.
+- Ready for the user to add supervisors and assign 2 supervisors to Shift 1 and 2 supervisors to Shift 2 for each day from **لوحة الأدمن -> إدارة المشرفين والفترات الزمنية**, or provide legacy registration files when ready to run the historical import tool.

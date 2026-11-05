@@ -45,7 +45,8 @@ CREATE TABLE IF NOT EXISTS public.icds_registration_days (
 CREATE TABLE IF NOT EXISTS public.icds_day_supervisor_assignments (
   id SERIAL PRIMARY KEY,
   day_id INTEGER NOT NULL REFERENCES public.icds_registration_days(id) ON DELETE CASCADE,
-  slot_number INTEGER NOT NULL CHECK (slot_number IN (1, 2)),
+  shift_number INTEGER NOT NULL DEFAULT 1 CHECK (shift_number IN (1, 2)),
+  slot_number INTEGER NOT NULL CHECK (slot_number IN (1, 2, 3, 4)),
   supervisor_id INTEGER REFERENCES public.icds_supervisors(id) ON DELETE SET NULL,
   updated_at TEXT NOT NULL,
   UNIQUE(day_id, slot_number)
@@ -68,6 +69,9 @@ CREATE TABLE IF NOT EXISTS public.icds_participants (
   supervisor_name TEXT NOT NULL,
   registration_day_id INTEGER REFERENCES public.icds_registration_days(id) ON DELETE SET NULL,
   registration_day_name TEXT NOT NULL,
+  shift_number INTEGER NOT NULL DEFAULT 1,
+  shift_name TEXT NOT NULL DEFAULT 'الفترة الأولى',
+  shift_time TEXT NOT NULL DEFAULT '9:30 ص – 11:30 ص',
   registration_date TEXT NOT NULL,
   registration_time TEXT NOT NULL,
   created_timestamp TEXT NOT NULL,

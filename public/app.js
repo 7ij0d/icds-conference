@@ -1,6 +1,6 @@
 /**
  * ICDS 4th Edition Conference Registration Website
- * Frontend Application Logic (Connected to Libyan Spider Cloud DB & Local API)
+ * Frontend Application Logic (2 Shifts x 2 Supervisors = 4 Supervisors/Day)
  */
 
 (function () {
@@ -16,8 +16,23 @@
   const state = {
     currentView: 'register',
     days: [],
+    shifts: [
+      {
+        shift_number: 1,
+        shift_name: 'الفترة الأولى',
+        shift_time: '9:30 صباحاً – 11:30 صباحاً',
+        short_time: '9:30 ص – 11:30 ص'
+      },
+      {
+        shift_number: 2,
+        shift_name: 'الفترة الثانية',
+        shift_time: '11:30 صباحاً – 1:30 ظهراً',
+        short_time: '11:30 ص – 1:30 م'
+      }
+    ],
     selectedDayId: null,
     selectedDayName: 'الأحد',
+    selectedShiftNumber: 1,
     selectedCategory: 'student',
     studentFee: 30,
     doctorFee: 60,
@@ -76,6 +91,9 @@
     viewAdmin: document.getElementById('view-admin'),
 
     dayButtonsContainer: document.getElementById('day-buttons-container'),
+    shiftButtonsContainer: document.getElementById('shift-buttons-container'),
+    shiftBtn1: document.getElementById('shift-btn-1'),
+    shiftBtn2: document.getElementById('shift-btn-2'),
     supervisorSelect: document.getElementById('reg-supervisor-select'),
     nameArInput: document.getElementById('reg-name-ar'),
     nameEnInput: document.getElementById('reg-name-en'),
@@ -150,7 +168,7 @@
   }
 
   // ==========================================================================
-  // 2. LOAD OVERVIEW & REGISTRATION DAY / SUPERVISOR LOGIC
+  // 2. LOAD OVERVIEW & REGISTRATION DAY / SHIFT / SUPERVISOR LOGIC
   // ==========================================================================
 
   async function loadPublicOverview() {
@@ -162,6 +180,10 @@
         state.currencyShort = data.conference.currency_short || 'د.ل';
       }
 
+      if (Array.isArray(data.shifts) && data.shifts.length === 2) {
+        state.shifts = data.shifts;
+      }
+
       if (Array.isArray(data.days) && data.days.length > 0) {
         state.days = data.days;
         if (!state.selectedDayId) {
@@ -171,6 +193,7 @@
       }
 
       renderDayButtons();
+      renderShiftButtons();
       populateSupervisorDropdown();
       updateCategoryUI();
     } catch (err) {
@@ -220,6 +243,26 @@
     });
   }
 
+  function renderShiftButtons() {
+    const s1 = state.shifts.find((s) => Number(s.shift_number) === 1) || state.shifts[0];
+    const s2 = state.shifts.find((s) => Number(s.shift_number) === 2) || state.shifts[1];
+
+    const s1Title = document.getElementById('shift-1-title-lbl');
+    const s1Time = document.getElementById('shift-1-time-lbl');
+    const s2Title = document.getElementById('shift-2-title-lbl');
+    const s2Time = document.getElementById('shift-2-time-lbl');
+
+    if (s1Title && s1) s1Title.textContent = s1.shift_name;
+    if (s1Time && s1) s1Time.textContent = s1.shift_time;
+    if (s2Title && s2) s2Title.textContent = s2.shift_name;
+    if (s2Time && s2) s2Time.textContent = s2.shift_time;
+
+    if (els.shiftBtn1 && els.shiftBtn2) {
+      els.shiftBtn1.classList.toggle('active', state.selectedShiftNumber === 1);
+      els.shiftBtn2.classList.toggle('active', state.selectedShiftNumber === 2);
+    }
+  }
+
   function populateSupervisorDropdown() {
     if (!els.supervisorSelect) return;
 
@@ -228,16 +271,20 @@
       (d) => Number(d.id) === Number(state.selectedDayId) || d.day_name === state.selectedDayName
     );
 
-    const supervisors = (selectedDay && Array.isArray(selectedDay.supervisors)) ? selectedDay.supervisors : [];
+    const allDaySupervisors = selectedDay && Array.isArray(selectedDay.supervisors) ? selectedDay.supervisors : [];
+    const shiftSupervisors = allDaySupervisors.filter(
+      (sup) => Number(sup.shift_number || (sup.slot_number <= 2 ? 1 : 2)) === Number(state.selectedShiftNumber)
+    );
 
     let optionsHtml = '<option value="">اختر اسم المشرف</option>';
-    supervisors.forEach((sup) => {
-      optionsHtml += `<option value="${sup.id}">${sup.name}</option>`;
+    shiftSupervisors.forEach((sup) => {
+      const supId = sup.id || sup.supervisor_id;
+      optionsHtml += `<option value="${supId}">${sup.name}</option>`;
     });
 
     els.supervisorSelect.innerHTML = optionsHtml;
 
-    if (currentVal && supervisors.some((s) => String(s.id) === String(currentVal))) {
+    if (currentVal && shiftSupervisors.some((s) => String(s.id || s.supervisor_id) === String(currentVal))) {
       els.supervisorSelect.value = currentVal;
     }
   }
@@ -319,6 +366,7 @@
     hideRegistrationFeedback();
 
     const dayId = state.selectedDayId;
+    const shiftNumber = state.selectedShiftNumber;
     const supervisorId = els.supervisorSelect.value;
     const nameAr = els.nameArInput.value.trim();
     const nameEn = els.nameEnInput.value.trim();
@@ -329,8 +377,12 @@
       showRegistrationFeedback('يرجى اختيار يوم التسجيل أولاً.', 'error');
       return;
     }
+    if (![1, 2].includes(Number(shiftNumber))) {
+      showRegistrationFeedback('يرجى اختيار الفترة الزمنية أولاً.', 'error');
+      return;
+    }
     if (!supervisorId) {
-      showRegistrationFeedback('يرجى اختيار المشرف المخصص لهذا اليوم.', 'error');
+      showRegistrationFeedback('يرجى اختيار المشرف المخصص لهذه الفترة.', 'error');
       els.supervisorSelect.focus();
       return;
     }
@@ -356,6 +408,7 @@
 
     const formData = new FormData();
     formData.append('day_id', String(dayId));
+    formData.append('shift_number', String(shiftNumber));
     formData.append('supervisor_id', String(supervisorId));
     formData.append('name_ar', nameAr);
     formData.append('name_en', nameEn);
@@ -383,7 +436,7 @@
         'success'
       );
 
-      // Reset participant fields for next entry while keeping selected Day & Supervisor
+      // Reset participant fields for next entry while keeping selected Day, Shift & Supervisor
       els.nameArInput.value = '';
       els.nameEnInput.value = '';
       els.academicYearSelect.value = '';
@@ -450,7 +503,7 @@
     if (tabName === 'reports') loadAdminReports();
   }
 
-  // 6.1 Supervisors & Days Management
+  // 6.1 Supervisors, Shifts & Days Management (4 Supervisors per Day / 2 per Shift)
   async function loadAdminSupervisorsAndDays() {
     const [supData, dayData] = await Promise.all([
       apiFetch('/api/admin/supervisors'),
@@ -459,6 +512,9 @@
 
     state.supervisors = supData.supervisors || [];
     state.adminDays = dayData.days || [];
+    if (Array.isArray(dayData.shifts) && dayData.shifts.length === 2) {
+      state.shifts = dayData.shifts;
+    }
 
     renderAdminSupervisorsTable();
     renderAdminDaysAssignment();
@@ -483,7 +539,7 @@
         <td>${s.registrations_count || 0}</td>
         <td>
           <button type="button" class="table-mini-btn" data-edit-sup="${s.id}" data-name="${s.name}">تعديل</button>
-          <button type="button" class="table-mini-btn" data-toggle-sup="${s.id}" data-active="${s.is_active}">${s.is_active ? 'تعطيل' : 'تفعيل'}</button>
+          <button type="button" class="table-mini-btn" data-toggle-sup="${s.id}" data-active="${s.is_active ? 1 : 0}">${s.is_active ? 'تعطيل' : 'تفعيل'}</button>
           <button type="button" class="table-mini-btn danger" data-del-sup="${s.id}">حذف</button>
         </td>
       </tr>
@@ -540,14 +596,18 @@
     if (!container) return;
 
     const activeSups = state.supervisors.filter((s) => s.is_active);
+    const shift1Meta = state.shifts[0] || { shift_name: 'الفترة الأولى', short_time: '9:30 ص – 11:30 ص' };
+    const shift2Meta = state.shifts[1] || { shift_name: 'الفترة الثانية', short_time: '11:30 ص – 1:30 م' };
 
     container.innerHTML = state.adminDays
       .map((day) => {
-        const sup1Id = day.supervisor_1 ? day.supervisor_1.id : '';
-        const sup2Id = day.supervisor_2 ? day.supervisor_2.id : '';
+        const sup1Id = day.slot_1?.supervisor_id || day.supervisor_1?.id || '';
+        const sup2Id = day.slot_2?.supervisor_id || day.supervisor_2?.id || '';
+        const sup3Id = day.slot_3?.supervisor_id || day.supervisor_3?.id || '';
+        const sup4Id = day.slot_4?.supervisor_id || day.supervisor_4?.id || '';
 
-        const buildOptions = (selectedId) => {
-          let html = '<option value="">-- اختر المشرف --</option>';
+        const buildOptions = (selectedId, placeholderText) => {
+          let html = `<option value="">${placeholderText}</option>`;
           activeSups.forEach((s) => {
             const sel = Number(s.id) === Number(selectedId) ? 'selected' : '';
             html += `<option value="${s.id}" ${sel}>${s.name}</option>`;
@@ -559,13 +619,43 @@
         <div class="day-assign-card" data-day-card="${day.id}">
           <div class="day-assign-header">
             <span>يوم ${day.day_name}</span>
-            <button type="button" class="table-mini-btn" data-rename-day="${day.id}" data-day-name="${day.day_name}">تعديل اسم اليوم</button>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button type="button" class="table-mini-btn" data-rename-day="${day.id}" data-day-name="${day.day_name}">تعديل اليوم</button>
+              <button type="button" class="teal-action-btn" style="height:34px;padding:0 14px;font-size:12.5px;" data-save-day-assign="${day.id}">حفظ توزيع ${day.day_name}</button>
+            </div>
           </div>
-          <div class="day-assign-selects">
-            <select class="form-select sup-slot-1" aria-label="المشرف الأول">${buildOptions(sup1Id)}</select>
-            <select class="form-select sup-slot-2" aria-label="المشرف الثاني">${buildOptions(sup2Id)}</select>
-            <button type="button" class="teal-action-btn" data-save-day-assign="${day.id}">حفظ</button>
-          </div>
+
+          <table class="day-shifts-table">
+            <thead>
+              <tr>
+                <th style="width:22%;">الفترة</th>
+                <th style="width:24%;">الوقت</th>
+                <th>المشرفون (مشرفان لكل فترة)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>${shift1Meta.shift_name}</strong></td>
+                <td dir="rtl">${shift1Meta.short_time || '9:30 ص – 11:30 ص'}</td>
+                <td>
+                  <div class="shift-supervisors-pair">
+                    <select class="form-select sup-slot-1" aria-label="المشرف الأول - الفترة الأولى">${buildOptions(sup1Id, '-- المشرف الأول --')}</select>
+                    <select class="form-select sup-slot-2" aria-label="المشرف الثاني - الفترة الأولى">${buildOptions(sup2Id, '-- المشرف الثاني --')}</select>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>${shift2Meta.shift_name}</strong></td>
+                <td dir="rtl">${shift2Meta.short_time || '11:30 ص – 1:30 م'}</td>
+                <td>
+                  <div class="shift-supervisors-pair">
+                    <select class="form-select sup-slot-3" aria-label="المشرف الأول - الفترة الثانية">${buildOptions(sup3Id, '-- المشرف الأول --')}</select>
+                    <select class="form-select sup-slot-4" aria-label="المشرف الثاني - الفترة الثانية">${buildOptions(sup4Id, '-- المشرف الثاني --')}</select>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       `;
       })
@@ -577,20 +667,28 @@
         const card = container.querySelector(`[data-day-card="${dayId}"]`);
         const sup1 = card.querySelector('.sup-slot-1').value || null;
         const sup2 = card.querySelector('.sup-slot-2').value || null;
+        const sup3 = card.querySelector('.sup-slot-3').value || null;
+        const sup4 = card.querySelector('.sup-slot-4').value || null;
 
+        const origLabel = btn.textContent;
         try {
           btn.textContent = 'جاري الحفظ...';
           await apiFetch(`/api/admin/days/${dayId}/assign`, {
             method: 'PUT',
-            body: JSON.stringify({ supervisor_1_id: sup1, supervisor_2_id: sup2 })
+            body: JSON.stringify({
+              supervisor_1_id: sup1,
+              supervisor_2_id: sup2,
+              supervisor_3_id: sup3,
+              supervisor_4_id: sup4
+            })
           });
           btn.textContent = 'تم الحفظ ✓';
           await loadPublicOverview();
           setTimeout(() => {
-            btn.textContent = 'حفظ';
+            btn.textContent = origLabel;
           }, 1200);
         } catch (err) {
-          btn.textContent = 'حفظ';
+          btn.textContent = origLabel;
           window.alert(err.message);
         }
       });
@@ -633,6 +731,7 @@
   async function loadAdminRegistrations() {
     const search = (document.getElementById('filter-search')?.value || '').trim();
     const dayId = document.getElementById('filter-day')?.value || '';
+    const shiftNum = document.getElementById('filter-shift')?.value || '';
     const supId = document.getElementById('filter-supervisor')?.value || '';
     const category = document.getElementById('filter-category')?.value || '';
     const year = document.getElementById('filter-year')?.value || '';
@@ -640,6 +739,7 @@
     const params = new URLSearchParams();
     if (search) params.set('search', search);
     if (dayId) params.set('day_id', dayId);
+    if (shiftNum) params.set('shift_number', shiftNum);
     if (supId) params.set('supervisor_id', supId);
     if (category) params.set('category', category);
     if (year) params.set('academic_year', year);
@@ -654,13 +754,20 @@
     if (!tbody) return;
 
     if (state.participants.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="11" class="empty-cell">لا توجد تسجيلات مطابقة.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="12" class="empty-cell">لا توجد تسجيلات مطابقة.</td></tr>';
       return;
     }
 
     tbody.innerHTML = state.participants
       .map((p) => {
         const receiptUrl = `${API_BASE}/api/receipts/${p.id}/image?admin_token=${encodeURIComponent(state.adminToken)}`;
+        const shiftLabel = p.shift_name
+          ? `${p.shift_name}${p.shift_time ? ` (${p.shift_time})` : ''}`
+          : Number(p.shift_number) === 2
+          ? 'الفترة الثانية (11:30 ص – 1:30 م)'
+          : 'الفترة الأولى (9:30 ص – 11:30 ص)';
+        const hasReceipt = p.has_receipt || p.has_receipt_image;
+
         return `
         <tr>
           <td><strong>${p.registration_number || p.id}</strong></td>
@@ -670,11 +777,12 @@
           <td>${p.academic_year || '—'}</td>
           <td>${p.fee_amount} د.ل</td>
           <td>${p.registration_day_name || '—'}</td>
+          <td>${shiftLabel}</td>
           <td>${p.supervisor_name || '—'}</td>
           <td dir="ltr">${p.registration_date || ''} ${p.registration_time || ''}</td>
           <td>
             ${
-              p.has_receipt
+              hasReceipt
                 ? `<button type="button" class="table-mini-btn" data-view-receipt="${receiptUrl}" data-title="${p.name_ar}">عرض الإيصال</button>`
                 : '—'
             }
@@ -722,7 +830,7 @@
   // 6.3 Receipts Grid
   async function loadAdminReceipts() {
     const data = await apiFetch('/api/admin/participants');
-    const list = (data.participants || []).filter((p) => p.has_receipt);
+    const list = (data.participants || []).filter((p) => p.has_receipt || p.has_receipt_image);
     const grid = document.getElementById('admin-receipts-grid');
     if (!grid) return;
 
@@ -734,11 +842,12 @@
     grid.innerHTML = list
       .map((p) => {
         const imgUrl = `${API_BASE}/api/receipts/${p.id}/image?admin_token=${encodeURIComponent(state.adminToken)}`;
+        const shiftName = p.shift_name || (Number(p.shift_number) === 2 ? 'الفترة الثانية' : 'الفترة الأولى');
         return `
         <div class="receipt-item-card">
           <img src="${imgUrl}" alt="إيصال ${p.name_ar}" data-full-url="${imgUrl}" data-name="${p.name_ar}" />
           <div><strong>${p.name_ar}</strong></div>
-          <div style="font-size:12.5px;color:#5a6b7c;">${p.category_label} • ${p.fee_amount} د.ل • ${p.registration_day_name}</div>
+          <div style="font-size:12.5px;color:#5a6b7c;">${p.category_label} • ${p.fee_amount} د.ل • ${p.registration_day_name} (${shiftName})</div>
           <div style="font-size:12px;color:#5a6b7c;">المشرف: ${p.supervisor_name}</div>
         </div>
       `;
@@ -752,18 +861,42 @@
     });
   }
 
-  // 6.4 Reports
+  // 6.4 Reports (By Shift, By Day, By Supervisor)
   async function loadAdminReports() {
     const data = await apiFetch('/api/admin/dashboard');
     const summary = data.summary || {};
 
     document.getElementById('rep-total-reg').textContent = summary.total_registrations || 0;
-    document.getElementById('rep-total-stu').textContent = summary.total_students || 0;
-    document.getElementById('rep-total-doc').textContent = summary.total_doctors || 0;
+    document.getElementById('rep-shift1-summary').textContent = `${summary.shift_1_count || 0} (${summary.shift_1_amount || 0} د.ل)`;
+    document.getElementById('rep-shift2-summary').textContent = `${summary.shift_2_count || 0} (${summary.shift_2_amount || 0} د.ل)`;
     document.getElementById('rep-total-amount').textContent = `${summary.total_registered_amount || 0} د.ل`;
 
+    // 1. Report by Shifts
+    const shiftTbody = document.getElementById('report-by-shift-tbody');
+    const byShifts = data.by_shifts || [];
+    if (shiftTbody) {
+      shiftTbody.innerHTML =
+        byShifts.length === 0
+          ? '<tr><td colspan="6" class="empty-cell">لا توجد بيانات.</td></tr>'
+          : byShifts
+              .map(
+                (sh) => `
+          <tr>
+            <td><strong>${sh.shift_name}</strong></td>
+            <td>${sh.shift_time}</td>
+            <td>${sh.total_count || 0}</td>
+            <td>${sh.students_count || 0}</td>
+            <td>${sh.doctors_count || 0}</td>
+            <td><strong>${sh.total_amount || 0} د.ل</strong></td>
+          </tr>
+        `
+              )
+              .join('');
+    }
+
+    // 2. Report by Days
     const dayTbody = document.getElementById('report-by-day-tbody');
-    const byDays = data.by_days || [];
+    const byDays = data.by_days || data.registrations_by_day || [];
     if (dayTbody) {
       dayTbody.innerHTML =
         byDays.length === 0
@@ -773,18 +906,19 @@
                 (d) => `
           <tr>
             <td><strong>${d.day_name}</strong></td>
+            <td>${d.shift_1_count || 0} (${d.shift_1_amount || 0} د.ل)</td>
+            <td>${d.shift_2_count || 0} (${d.shift_2_amount || 0} د.ل)</td>
             <td>${d.total_count || 0}</td>
-            <td>${d.students_count || 0}</td>
-            <td>${d.doctors_count || 0}</td>
-            <td>${d.total_amount || 0} د.ل</td>
+            <td><strong>${d.total_amount ?? d.registered_amount ?? 0} د.ل</strong></td>
           </tr>
         `
               )
               .join('');
     }
 
+    // 3. Report by Supervisors
     const supTbody = document.getElementById('report-by-sup-tbody');
-    const bySups = data.by_supervisors || [];
+    const bySups = data.by_supervisors || data.registrations_by_supervisor || [];
     if (supTbody) {
       supTbody.innerHTML =
         bySups.length === 0
@@ -793,11 +927,11 @@
               .map(
                 (s) => `
           <tr>
-            <td><strong>${s.name}</strong></td>
+            <td><strong>${s.name || s.supervisor_name}</strong></td>
+            <td>${s.shift_1_count || 0}</td>
+            <td>${s.shift_2_count || 0}</td>
             <td>${s.total_count || 0}</td>
-            <td>${s.students_count || 0}</td>
-            <td>${s.doctors_count || 0}</td>
-            <td>${s.total_amount || 0} د.ل</td>
+            <td><strong>${s.total_amount ?? s.registered_amount ?? 0} د.ل</strong></td>
           </tr>
         `
               )
@@ -884,6 +1018,22 @@
     }
     if (els.homeGoAdminBtn) {
       els.homeGoAdminBtn.addEventListener('click', () => switchView('admin'));
+    }
+
+    // Shift Toggle (Step 2 on Registration Page)
+    if (els.shiftBtn1) {
+      els.shiftBtn1.addEventListener('click', () => {
+        state.selectedShiftNumber = 1;
+        renderShiftButtons();
+        populateSupervisorDropdown();
+      });
+    }
+    if (els.shiftBtn2) {
+      els.shiftBtn2.addEventListener('click', () => {
+        state.selectedShiftNumber = 2;
+        renderShiftButtons();
+        populateSupervisorDropdown();
+      });
     }
 
     // Category Toggle
@@ -991,7 +1141,7 @@
     }
 
     // Filters in Admin Registrations
-    ['filter-search', 'filter-day', 'filter-supervisor', 'filter-category', 'filter-year'].forEach((id) => {
+    ['filter-search', 'filter-day', 'filter-shift', 'filter-supervisor', 'filter-category', 'filter-year'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) {
         el.addEventListener('input', () => loadAdminRegistrations());
@@ -1003,7 +1153,7 @@
     const exportBtn = document.getElementById('export-excel-btn');
     if (exportBtn) {
       exportBtn.addEventListener('click', () => {
-        window.open(`${API_BASE}/api/admin/export?format=xlsx&admin_token=${encodeURIComponent(state.adminToken)}`, '_blank');
+        window.open(`${API_BASE}/api/admin/participants-export?format=xlsx&admin_token=${encodeURIComponent(state.adminToken)}`, '_blank');
       });
     }
 

@@ -86,7 +86,7 @@
   <!-- ================= MAIN CONTENT ================= -->
   <main class="page-main">
 
-    <!-- 1. REGISTRATION VIEW (DEFAULT ACTIVE VIEW MATCHING REFERENCE IMAGE) -->
+    <!-- 1. REGISTRATION VIEW (DEFAULT ACTIVE VIEW) -->
     <section id="view-register" class="view-section active">
       <div class="reg-card">
         <!-- Subtle Top-Left Tooth Watermark (Desktop Reference Match) -->
@@ -130,7 +130,22 @@
             </div>
           </div>
 
-          <!-- Step 2: Supervisor Selection -->
+          <!-- Step 2: Registration Shift (Period) Selector -->
+          <div class="form-block shift-selector-block">
+            <label class="field-label">اختر الفترة الزمنية <span class="req">*</span></label>
+            <div class="shift-buttons-row" id="shift-buttons-container" role="radiogroup" aria-label="اختر الفترة الزمنية">
+              <button type="button" class="shift-btn active" data-shift-number="1" id="shift-btn-1">
+                <span class="shift-btn-title" id="shift-1-title-lbl">الفترة الأولى</span>
+                <span class="shift-btn-time" id="shift-1-time-lbl">9:30 صباحاً – 11:30 صباحاً</span>
+              </button>
+              <button type="button" class="shift-btn" data-shift-number="2" id="shift-btn-2">
+                <span class="shift-btn-title" id="shift-2-title-lbl">الفترة الثانية</span>
+                <span class="shift-btn-time" id="shift-2-time-lbl">11:30 صباحاً – 1:30 ظهراً</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 3: Supervisor Selection (Filtered by Selected Day + Selected Shift) -->
           <div class="form-block supervisor-row-block">
             <label class="field-label supervisor-inline-label" for="reg-supervisor-select">اختر المشرف <span class="req">*</span></label>
             <div class="select-field-wrap">
@@ -145,7 +160,7 @@
             </div>
           </div>
 
-          <!-- Step 3: Participant Name Fields (Arabic & English) -->
+          <!-- Step 4: Participant Name Fields (Arabic & English) -->
           <div class="form-grid-two names-row-block">
             <!-- Arabic Name (Right Column on Desktop, First on Mobile) -->
             <div class="form-block">
@@ -190,7 +205,7 @@
             </div>
           </div>
 
-          <!-- Step 4: Participant Category & Academic Year -->
+          <!-- Step 5: Participant Category & Academic Year -->
           <div class="form-grid-two category-year-row-block">
             <!-- Participant Category (Right Column on Desktop) -->
             <div class="form-block">
@@ -228,7 +243,7 @@
             </div>
           </div>
 
-          <!-- Step 5: Receipt Upload & Registration Fee -->
+          <!-- Step 6: Receipt Upload & Registration Fee -->
           <div class="form-grid-two receipt-fee-row-block">
             <!-- Payment Receipt Upload (Right Column on Desktop, Below Fee on Mobile) -->
             <div class="form-block receipt-upload-col">
@@ -284,7 +299,7 @@
           <!-- Inline Feedback / Error / Success Alert -->
           <div id="reg-feedback-box" class="reg-feedback hidden" role="alert"></div>
 
-          <!-- Step 6: Submit Button -->
+          <!-- Step 7: Submit Button -->
           <button type="submit" class="submit-participant-btn" id="reg-submit-btn">
             <svg class="submit-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
               <circle cx="9.5" cy="8" r="3.8"/>
@@ -333,7 +348,7 @@
       </div>
     </section>
 
-    <!-- 3. ADMIN VIEW (CLEAN MINIMAL LIGHT INTERFACE MATCHING REFERENCE) -->
+    <!-- 3. ADMIN VIEW (CLEAN MINIMAL LIGHT INTERFACE) -->
     <section id="view-admin" class="view-section hidden">
 
       <!-- Admin Login Card -->
@@ -348,7 +363,7 @@
             </div>
             <h2 class="reg-title">لوحة الأدمن</h2>
           </div>
-          <p class="reg-subtitle">تسجيل الدخول لإدارة المشرفين والتسجيلات والإيصالات والتقارير.</p>
+          <p class="reg-subtitle">تسجيل الدخول لإدارة المشرفين والفترات الزمنية والتسجيلات والتقارير.</p>
         </div>
 
         <div class="reg-divider"></div>
@@ -372,7 +387,7 @@
         </form>
       </div>
 
-      <!-- Admin Panel Workspace (5 Essential Sections Only) -->
+      <!-- Admin Panel Workspace -->
       <div id="admin-panel-workspace" class="admin-card hidden">
         <div class="admin-header-bar">
           <div>
@@ -383,7 +398,7 @@
 
         <!-- 5 Essential Admin Tabs -->
         <div class="admin-tabs-bar" role="tablist">
-          <button type="button" class="admin-tab-btn active" data-admin-tab="supervisors">إدارة المشرفين</button>
+          <button type="button" class="admin-tab-btn active" data-admin-tab="supervisors">إدارة المشرفين والفترات الزمنية</button>
           <button type="button" class="admin-tab-btn" data-admin-tab="registrations">إدارة التسجيلات</button>
           <button type="button" class="admin-tab-btn" data-admin-tab="receipts">الإيصالات</button>
           <button type="button" class="admin-tab-btn" data-admin-tab="reports">التقارير</button>
@@ -392,12 +407,12 @@
 
         <div class="reg-divider"></div>
 
-        <!-- TAB 1: إدارة المشرفين -->
+        <!-- TAB 1: إدارة المشرفين والفترات الزمنية -->
         <div id="admin-tab-supervisors" class="admin-tab-pane active">
           <div class="admin-section-grid">
-            <!-- Add Supervisor -->
+            <!-- Right Column: Supervisors List & Add Form -->
             <div class="admin-subbox">
-              <h3 class="subbox-title">إضافة مشرف جديد</h3>
+              <h3 class="subbox-title">إضافة وإدارة أسماء المشرفين</h3>
               <form id="add-supervisor-form" class="inline-add-form">
                 <input type="text" id="new-sup-name" class="form-input plain-input" placeholder="اسم المشرف الكامل" required />
                 <button type="submit" class="teal-action-btn">إضافة مشرف</button>
@@ -420,9 +435,9 @@
               </div>
             </div>
 
-            <!-- Assign 2 Supervisors Per Day -->
+            <!-- Left Column: Assign 4 Supervisors Per Day Across 2 Shifts -->
             <div class="admin-subbox">
-              <h3 class="subbox-title">توزيع المشرفين على أيام التسجيل (مشرفان لكل يوم)</h3>
+              <h3 class="subbox-title">توزيع المشرفين على الأيام والفترات الزمنية (4 مشرفين لكل يوم / مشرفان لكل فترة)</h3>
               <div id="admin-days-assignment-list" class="days-assignment-list"></div>
             </div>
           </div>
@@ -434,6 +449,11 @@
             <input type="text" id="filter-search" class="form-input plain-input" placeholder="بحث بالاسم العربي أو الإنجليزي أو رقم التسجيل..." />
             <select id="filter-day" class="form-select">
               <option value="">كل الأيام</option>
+            </select>
+            <select id="filter-shift" class="form-select">
+              <option value="">كل الفترات الزمنية</option>
+              <option value="1">الفترة الأولى (9:30 ص – 11:30 ص)</option>
+              <option value="2">الفترة الثانية (11:30 ص – 1:30 م)</option>
             </select>
             <select id="filter-supervisor" class="form-select">
               <option value="">كل المشرفين</option>
@@ -461,18 +481,19 @@
                   <th>رقم التسجيل</th>
                   <th>الاسم بالعربي</th>
                   <th>الاسم بالإنجليزي</th>
-                  <th>نوع المشارك</th>
+                  <th>الفئة</th>
                   <th>السنة الدراسية</th>
                   <th>الرسوم</th>
                   <th>اليوم</th>
+                  <th>الفترة الزمنية</th>
                   <th>المشرف</th>
-                  <th>التاريخ والوقت</th>
+                  <th>وقت التسجيل الفعلي</th>
                   <th>الإيصال</th>
                   <th>إجراءات</th>
                 </tr>
               </thead>
               <tbody id="admin-registrations-tbody">
-                <tr><td colspan="11" class="empty-cell">لا توجد تسجيلات حالياً.</td></tr>
+                <tr><td colspan="12" class="empty-cell">لا توجد تسجيلات حالياً.</td></tr>
               </tbody>
             </table>
           </div>
@@ -489,46 +510,72 @@
         <div id="admin-tab-reports" class="admin-tab-pane hidden">
           <div class="reports-summary-bar" id="reports-summary-bar">
             <div class="report-pill"><span>إجمالي المسجلين:</span> <strong id="rep-total-reg">0</strong></div>
-            <div class="report-pill"><span>الطلبة:</span> <strong id="rep-total-stu">0</strong></div>
-            <div class="report-pill"><span>الدكاترة:</span> <strong id="rep-total-doc">0</strong></div>
-            <div class="report-pill"><span>إجمالي الرسوم:</span> <strong id="rep-total-amount">0 د.ل</strong></div>
+            <div class="report-pill"><span>الفترة الأولى (9:30–11:30):</span> <strong id="rep-shift1-summary">0 (0 د.ل)</strong></div>
+            <div class="report-pill"><span>الفترة الثانية (11:30–1:30):</span> <strong id="rep-shift2-summary">0 (0 د.ل)</strong></div>
+            <div class="report-pill"><span>إجمالي المبالغ المالية:</span> <strong id="rep-total-amount">0 د.ل</strong></div>
+          </div>
+
+          <!-- Shift Report Table -->
+          <div class="admin-subbox" style="margin-bottom: 18px;">
+            <h3 class="subbox-title">تقرير التسجيلات والمبالغ المالية حسب الفترة الزمنية</h3>
+            <div class="table-scroll">
+              <table class="clean-table">
+                <thead>
+                  <tr>
+                    <th>الفترة الزمنية</th>
+                    <th>الوقت</th>
+                    <th>عدد المشاركين المسجلين</th>
+                    <th>طلبة</th>
+                    <th>دكاترة</th>
+                    <th>إجمالي المبالغ المالية للفترة</th>
+                  </tr>
+                </thead>
+                <tbody id="report-by-shift-tbody">
+                  <tr><td colspan="6" class="empty-cell">لا توجد بيانات.</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <div class="admin-section-grid">
             <div class="admin-subbox">
-              <h3 class="subbox-title">تقرير التسجيلات حسب الأيام</h3>
-              <table class="clean-table">
-                <thead>
-                  <tr>
-                    <th>اليوم</th>
-                    <th>عدد المسجلين</th>
-                    <th>طلبة</th>
-                    <th>دكاترة</th>
-                    <th>إجمالي المبلغ</th>
-                  </tr>
-                </thead>
-                <tbody id="report-by-day-tbody">
-                  <tr><td colspan="5" class="empty-cell">لا توجد بيانات.</td></tr>
-                </tbody>
-              </table>
+              <h3 class="subbox-title">تقرير التسجيلات حسب الأيام والفترات</h3>
+              <div class="table-scroll">
+                <table class="clean-table">
+                  <thead>
+                    <tr>
+                      <th>اليوم</th>
+                      <th>الفترة الأولى</th>
+                      <th>الفترة الثانية</th>
+                      <th>إجمالي اليوم</th>
+                      <th>إجمالي المبلغ</th>
+                    </tr>
+                  </thead>
+                  <tbody id="report-by-day-tbody">
+                    <tr><td colspan="5" class="empty-cell">لا توجد بيانات.</td></tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             <div class="admin-subbox">
-              <h3 class="subbox-title">تقرير التسجيلات حسب المشرفين</h3>
-              <table class="clean-table">
-                <thead>
-                  <tr>
-                    <th>المشرف</th>
-                    <th>عدد المسجلين</th>
-                    <th>طلبة</th>
-                    <th>دكاترة</th>
-                    <th>إجمالي المبلغ</th>
-                  </tr>
-                </thead>
-                <tbody id="report-by-sup-tbody">
-                  <tr><td colspan="5" class="empty-cell">لا توجد بيانات.</td></tr>
-                </tbody>
-              </table>
+              <h3 class="subbox-title">تقرير التسجيلات والمبالغ حسب المشرفين</h3>
+              <div class="table-scroll">
+                <table class="clean-table">
+                  <thead>
+                    <tr>
+                      <th>اسم المشرف</th>
+                      <th>الفترة الأولى</th>
+                      <th>الفترة الثانية</th>
+                      <th>إجمالي التسجيلات</th>
+                      <th>إجمالي المبالغ المالية</th>
+                    </tr>
+                  </thead>
+                  <tbody id="report-by-sup-tbody">
+                    <tr><td colspan="5" class="empty-cell">لا توجد بيانات.</td></tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

@@ -115,11 +115,12 @@ function initDatabase() {
       updated_at TEXT NOT NULL
     );
 
-    -- 5. جدول توزيع المشرفين على الأيام (مشرف أول ومشرف ثانٍ لكل يوم)
+    -- 5. جدول توزيع المشرفين على الأيام (4 مشرفين لكل يوم موزعين على فترتين)
     CREATE TABLE IF NOT EXISTS day_supervisor_assignments (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       day_id INTEGER NOT NULL,
-      slot_number INTEGER NOT NULL CHECK (slot_number IN (1, 2)),
+      shift_number INTEGER NOT NULL DEFAULT 1,
+      slot_number INTEGER NOT NULL CHECK (slot_number IN (1, 2, 3, 4)),
       supervisor_id INTEGER,
       updated_at TEXT NOT NULL,
       UNIQUE(day_id, slot_number),
@@ -145,6 +146,9 @@ function initDatabase() {
       supervisor_name TEXT NOT NULL,
       registration_day_id INTEGER,
       registration_day_name TEXT NOT NULL,
+      shift_number INTEGER NOT NULL DEFAULT 1,
+      shift_name TEXT NOT NULL DEFAULT 'الفترة الأولى',
+      shift_time TEXT NOT NULL DEFAULT '9:30 ص – 11:30 ص',
       registration_date TEXT NOT NULL,
       registration_time TEXT NOT NULL,
       created_timestamp TEXT NOT NULL,
@@ -236,7 +240,13 @@ function initDatabase() {
     registration_open: '1',
     require_supervisor_pin: '0',
     supervisor_portal_code: '',
-    reg_number_prefix: 'ICDS4'
+    reg_number_prefix: 'ICDS4',
+    shift_1_name: 'الفترة الأولى',
+    shift_1_time: '9:30 صباحاً – 11:30 صباحاً',
+    shift_1_short_time: '9:30 ص – 11:30 ص',
+    shift_2_name: 'الفترة الثانية',
+    shift_2_time: '11:30 صباحاً – 1:30 ظهراً',
+    shift_2_short_time: '11:30 ص – 1:30 م'
   };
 
   const insertSetting = db.prepare(`
@@ -247,7 +257,35 @@ function initDatabase() {
     insertSetting.run(k, v, now);
   }
 
-  // Initialize the 5 core Registration Days (Sunday - Thursday) with empty supervisor slots
+  // Migrate day_supervisor_assignments if it had old CHECK(slot_number IN (1,2))
+  try {
+    const tableSql = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='day_supervisor_assignments'").get()?.sql || '';
+    if (tableSql.includes('slot_number IN (1, 2)')) {
+      db.exec(`
+        ALTER TABLE day_supervisor_assignments RENAME TO day_supervisor_assignments_old;
+        CREATE TABLE day_supervisor_assignments (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          day_id INTEGER NOT NULL,
+          shift_number INTEGER NOT NULL DEFAULT 1,
+          slot_number INTEGER NOT NULL CHECK (slot_number IN (1, 2, 3, 4)),
+          supervisor_id INTEGER,
+          updated_at TEXT NOT NULL,
+          UNIQUE(day_id, slot_number),
+          FOREIGN KEY (day_id) REFERENCES registration_days(id) ON DELETE CASCADE,
+          FOREIGN KEY (supervisor_id) REFERENCES supervisors(id) ON DELETE SET NULL
+        );
+        INSERT INTO day_supervisor_assignments (id, day_id, shift_number, slot_number, supervisor_id, updated_at)
+        SELECT id, day_id, CASE WHEN slot_number <= 2 THEN 1 ELSE 2 END, slot_number, supervisor_id, updated_at FROM day_supervisor_assignments_old;
+        DROP TABLE day_supervisor_assignments_old;
+      `);
+    }
+  } catch {}
+
+  try { db.exec("ALTER TABLE participants ADD COLUMN shift_number INTEGER NOT NULL DEFAULT 1;"); } catch {}
+  try { db.exec("ALTER TABLE participants ADD COLUMN shift_name TEXT NOT NULL DEFAULT 'الفترة الأولى';"); } catch {}
+  try { db.exec("ALTER TABLE participants ADD COLUMN shift_time TEXT NOT NULL DEFAULT '9:30 ص – 11:30 ص';"); } catch {}
+
+  // Initialize the 5 core Registration Days (Sunday - Thursday) with 4 empty supervisor slots
   const daysCount = db.prepare('SELECT COUNT(*) AS count FROM registration_days').get().count;
   if (daysCount === 0) {
     const coreDays = [
@@ -263,15 +301,29 @@ function initDatabase() {
       VALUES (?, ?, ?, 1, '', ?, ?)
     `);
     const insertSlot = db.prepare(`
-      INSERT INTO day_supervisor_assignments (day_id, slot_number, supervisor_id, updated_at)
-      VALUES (?, ?, NULL, ?)
+      INSERT OR IGNORE INTO day_supervisor_assignments (day_id, shift_number, slot_number, supervisor_id, updated_at)
+      VALUES (?, ?, ?, NULL, ?)
     `);
 
     for (const d of coreDays) {
       const info = insertDay.run(d.key, d.name, d.order, now, now);
       const dayId = info.lastInsertRowid;
-      insertSlot.run(dayId, 1, now);
-      insertSlot.run(dayId, 2, now);
+      insertSlot.run(dayId, 1, 1, now);
+      insertSlot.run(dayId, 1, 2, now);
+      insertSlot.run(dayId, 2, 3, now);
+      insertSlot.run(dayId, 2, 4, now);
+    }
+  } else {
+    const existingDays = db.prepare('SELECT id FROM registration_days').all();
+    const insertSlot = db.prepare(`
+      INSERT OR IGNORE INTO day_supervisor_assignments (day_id, shift_number, slot_number, supervisor_id, updated_at)
+      VALUES (?, ?, ?, NULL, ?)
+    `);
+    for (const d of existingDays) {
+      insertSlot.run(d.id, 1, 1, now);
+      insertSlot.run(d.id, 1, 2, now);
+      insertSlot.run(d.id, 2, 3, now);
+      insertSlot.run(d.id, 2, 4, now);
     }
   }
 }

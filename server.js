@@ -280,15 +280,33 @@ app.get('/api/public/overview', (req, res) => {
       ORDER BY dsa.day_id ASC, dsa.slot_number ASC
     `).all();
 
+    const shiftsConfig = [
+      {
+        shift_number: 1,
+        shift_name: settings.shift_1_name || 'الفترة الأولى',
+        shift_time: settings.shift_1_time || '9:30 صباحاً – 11:30 صباحاً',
+        short_time: settings.shift_1_short_time || '9:30 ص – 11:30 ص'
+      },
+      {
+        shift_number: 2,
+        shift_name: settings.shift_2_name || 'الفترة الثانية',
+        shift_time: settings.shift_2_time || '11:30 صباحاً – 1:30 ظهراً',
+        short_time: settings.shift_2_short_time || '11:30 ص – 1:30 م'
+      }
+    ];
+
     const daysWithSupervisors = days.map((day) => {
       const daySlots = assignments.filter((a) => a.day_id === day.id);
       const activeSupervisors = [];
-      for (const slot of [1, 2]) {
+      for (const slot of [1, 2, 3, 4]) {
         const found = daySlots.find((s) => s.slot_number === slot);
         if (found && found.supervisor_id && found.supervisor_active === 1) {
+          const shiftNum = slot <= 2 ? 1 : 2;
           activeSupervisors.push({
-            slot_number: slot,
+            id: found.supervisor_id,
             supervisor_id: found.supervisor_id,
+            slot_number: slot,
+            shift_number: shiftNum,
             name: found.supervisor_name,
             has_pin: Boolean(found.has_pin)
           });
@@ -296,7 +314,11 @@ app.get('/api/public/overview', (req, res) => {
       }
       return {
         ...day,
-        supervisors: activeSupervisors
+        supervisors: activeSupervisors,
+        shifts: {
+          shift_1: activeSupervisors.filter((s) => s.shift_number === 1),
+          shift_2: activeSupervisors.filter((s) => s.shift_number === 2)
+        }
       };
     });
 
@@ -316,6 +338,7 @@ app.get('/api/public/overview', (req, res) => {
         require_supervisor_pin: settings.require_supervisor_pin === '1',
         has_portal_code: Boolean(settings.supervisor_portal_code && settings.supervisor_portal_code.trim() !== '')
       },
+      shifts: shiftsConfig,
       stats: {
         total_registrations: Number(stats.total_registrations || 0),
         total_students: Number(stats.total_students || 0),
@@ -494,6 +517,7 @@ app.post('/api/registration/submit', (req, res) => {
       const sup = getSupervisorAuth(req);
       const {
         day_id,
+        shift_number,
         supervisor_id,
         name_ar,
         name_en,
@@ -512,13 +536,14 @@ app.post('/api/registration/submit', (req, res) => {
         }
       }
 
-      // Validate Day & Supervisor assignment
+      // Validate Day, Shift & Supervisor assignment
       const effectiveDayId = Number(day_id || (sup && sup.day_id));
+      const effectiveShiftNum = Number(shift_number || 1);
       const effectiveSupId = Number(supervisor_id || (sup && sup.supervisor_id));
 
-      if (!effectiveDayId || !effectiveSupId) {
+      if (!effectiveDayId || !effectiveSupId || ![1, 2].includes(effectiveShiftNum)) {
         cleanupUploadedFile();
-        return res.status(400).json({ error: 'يرجى تحديد يوم التسجيل واسم المشرف قبل تسجيل المشارك.' });
+        return res.status(400).json({ error: 'يرجى تحديد يوم التسجيل والفترة الزمنية واسم المشرف قبل تسجيل المشارك.' });
       }
 
       const dayRecord = db.prepare('SELECT * FROM registration_days WHERE id = ? AND is_active = 1').get(effectiveDayId);
@@ -527,17 +552,25 @@ app.post('/api/registration/submit', (req, res) => {
         return res.status(400).json({ error: 'يوم التسجيل المختار غير صالح أو غير مفعل.' });
       }
 
+      const [slotA, slotB] = effectiveShiftNum === 1 ? [1, 2] : [3, 4];
       const assignedSup = db.prepare(`
         SELECT dsa.slot_number, s.id, s.name, s.is_active
         FROM day_supervisor_assignments dsa
         JOIN supervisors s ON s.id = dsa.supervisor_id
-        WHERE dsa.day_id = ? AND dsa.supervisor_id = ?
-      `).get(effectiveDayId, effectiveSupId);
+        WHERE dsa.day_id = ? AND dsa.supervisor_id = ? AND dsa.slot_number IN (?, ?)
+      `).get(effectiveDayId, effectiveSupId, slotA, slotB);
 
       if (!assignedSup || assignedSup.is_active !== 1) {
         cleanupUploadedFile();
-        return res.status(400).json({ error: 'المشرف المختار غير مخصص لهذا اليوم في جدول التوزيع الحالي.' });
+        return res.status(400).json({ error: 'المشرف المختار غير مخصص لهذه الفترة الزمنية في هذا اليوم.' });
       }
+
+      const shiftName = effectiveShiftNum === 1
+        ? (settings.shift_1_name || 'الفترة الأولى')
+        : (settings.shift_2_name || 'الفترة الثانية');
+      const shiftTime = effectiveShiftNum === 1
+        ? (settings.shift_1_short_time || '9:30 ص – 11:30 ص')
+        : (settings.shift_2_short_time || '11:30 ص – 1:30 م');
 
       // Field Validations
       const cleanNameAr = String(name_ar || '').trim().replace(/\s+/g, ' ');
@@ -619,9 +652,10 @@ app.post('/api/registration/submit', (req, res) => {
             academic_year, fee_amount, payment_status,
             supervisor_id, supervisor_name,
             registration_day_id, registration_day_name,
+            shift_number, shift_name, shift_time,
             registration_date, registration_time, created_timestamp,
             source, is_duplicate_override, duplicate_note, duplicate_reviewed
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, 'تسجيل جديد', ?, ?, 0)
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'تسجيل جديد', ?, ?, 0)
         `);
 
         const pInfo = insertParticipant.run(
@@ -636,6 +670,9 @@ app.post('/api/registration/submit', (req, res) => {
           assignedSup.name,
           dayRecord.id,
           dayRecord.day_name,
+          effectiveShiftNum,
+          shiftName,
+          shiftTime,
           libyaTime.date,
           libyaTime.time,
           libyaTime.fullTimestamp,
@@ -814,12 +851,17 @@ app.get('/api/receipts/:participantId/image', (req, res) => {
 
 app.get('/api/admin/dashboard', requireAdmin, (_req, res) => {
   try {
+    const settings = getSettingsMap();
     const summary = db.prepare(`
       SELECT
         COUNT(*) AS total_registrations,
         COALESCE(SUM(CASE WHEN category = 'student' THEN 1 ELSE 0 END), 0) AS total_students,
         COALESCE(SUM(CASE WHEN category = 'doctor' THEN 1 ELSE 0 END), 0) AS total_doctors,
         COALESCE(SUM(fee_amount), 0) AS total_registered_amount,
+        COALESCE(SUM(CASE WHEN COALESCE(shift_number, 1) = 1 THEN 1 ELSE 0 END), 0) AS shift_1_count,
+        COALESCE(SUM(CASE WHEN COALESCE(shift_number, 1) = 1 THEN fee_amount ELSE 0 END), 0) AS shift_1_amount,
+        COALESCE(SUM(CASE WHEN COALESCE(shift_number, 1) = 2 THEN 1 ELSE 0 END), 0) AS shift_2_count,
+        COALESCE(SUM(CASE WHEN COALESCE(shift_number, 1) = 2 THEN fee_amount ELSE 0 END), 0) AS shift_2_amount,
         COALESCE(SUM(CASE WHEN payment_status = 'confirmed' THEN fee_amount ELSE 0 END), 0) AS total_confirmed_amount,
         COALESCE(SUM(CASE WHEN payment_status = 'pending' THEN fee_amount ELSE 0 END), 0) AS total_pending_amount,
         COALESCE(SUM(CASE WHEN payment_status = 'flagged' THEN fee_amount ELSE 0 END), 0) AS total_flagged_amount,
@@ -831,7 +873,6 @@ app.get('/api/admin/dashboard', requireAdmin, (_req, res) => {
       FROM participants
     `).get();
 
-    // Stats per Registration Day (including all configured days, showing 0 when empty)
     const days = db.prepare(`
       SELECT id, day_key, day_name, display_order, is_active
       FROM registration_days
@@ -845,6 +886,10 @@ app.get('/api/admin/dashboard', requireAdmin, (_req, res) => {
         COUNT(*) AS total_count,
         COALESCE(SUM(CASE WHEN category = 'student' THEN 1 ELSE 0 END), 0) AS students_count,
         COALESCE(SUM(CASE WHEN category = 'doctor' THEN 1 ELSE 0 END), 0) AS doctors_count,
+        COALESCE(SUM(CASE WHEN COALESCE(shift_number, 1) = 1 THEN 1 ELSE 0 END), 0) AS shift_1_count,
+        COALESCE(SUM(CASE WHEN COALESCE(shift_number, 1) = 1 THEN fee_amount ELSE 0 END), 0) AS shift_1_amount,
+        COALESCE(SUM(CASE WHEN COALESCE(shift_number, 1) = 2 THEN 1 ELSE 0 END), 0) AS shift_2_count,
+        COALESCE(SUM(CASE WHEN COALESCE(shift_number, 1) = 2 THEN fee_amount ELSE 0 END), 0) AS shift_2_amount,
         COALESCE(SUM(fee_amount), 0) AS registered_amount,
         COALESCE(SUM(CASE WHEN payment_status = 'confirmed' THEN fee_amount ELSE 0 END), 0) AS confirmed_amount
       FROM participants
@@ -865,12 +910,18 @@ app.get('/api/admin/dashboard', requireAdmin, (_req, res) => {
       const total_count = matchingRows.reduce((acc, r) => acc + Number(r.total_count || 0), 0);
       const students_count = matchingRows.reduce((acc, r) => acc + Number(r.students_count || 0), 0);
       const doctors_count = matchingRows.reduce((acc, r) => acc + Number(r.doctors_count || 0), 0);
+      const shift_1_count = matchingRows.reduce((acc, r) => acc + Number(r.shift_1_count || 0), 0);
+      const shift_1_amount = matchingRows.reduce((acc, r) => acc + Number(r.shift_1_amount || 0), 0);
+      const shift_2_count = matchingRows.reduce((acc, r) => acc + Number(r.shift_2_count || 0), 0);
+      const shift_2_amount = matchingRows.reduce((acc, r) => acc + Number(r.shift_2_amount || 0), 0);
       const registered_amount = matchingRows.reduce((acc, r) => acc + Number(r.registered_amount || 0), 0);
       const confirmed_amount = matchingRows.reduce((acc, r) => acc + Number(r.confirmed_amount || 0), 0);
 
       const slots = dayAssignments.filter((a) => a.day_id === d.id);
       const sup1 = slots.find((s) => s.slot_number === 1)?.supervisor_name || 'غير محدد';
       const sup2 = slots.find((s) => s.slot_number === 2)?.supervisor_name || 'غير محدد';
+      const sup3 = slots.find((s) => s.slot_number === 3)?.supervisor_name || 'غير محدد';
+      const sup4 = slots.find((s) => s.slot_number === 4)?.supervisor_name || 'غير محدد';
 
       return {
         day_id: d.id,
@@ -878,36 +929,45 @@ app.get('/api/admin/dashboard', requireAdmin, (_req, res) => {
         is_active: d.is_active === 1,
         supervisor_1: sup1,
         supervisor_2: sup2,
+        supervisor_3: sup3,
+        supervisor_4: sup4,
         total_count,
         students_count,
         doctors_count,
+        shift_1_count,
+        shift_1_amount,
+        shift_2_count,
+        shift_2_amount,
         registered_amount,
+        total_amount: registered_amount,
         confirmed_amount
       };
     });
 
-    // Also include any imported day names not in core registration_days
-    for (const ag of dayAggregates) {
-      const alreadyIncluded = days.some(
-        (d) => d.id === ag.registration_day_id || (!ag.registration_day_id && d.day_name === ag.registration_day_name)
-      );
-      if (!alreadyIncluded && ag.registration_day_name) {
-        registrationsByDay.push({
-          day_id: null,
-          day_name: ag.registration_day_name,
-          is_active: false,
-          supervisor_1: '—',
-          supervisor_2: '—',
-          total_count: Number(ag.total_count || 0),
-          students_count: Number(ag.students_count || 0),
-          doctors_count: Number(ag.doctors_count || 0),
-          registered_amount: Number(ag.registered_amount || 0),
-          confirmed_amount: Number(ag.confirmed_amount || 0)
-        });
-      }
-    }
+    const shiftAggs = db.prepare(`
+      SELECT
+        COALESCE(shift_number, 1) AS shift_number,
+        COUNT(*) AS total_count,
+        COALESCE(SUM(CASE WHEN category = 'student' THEN 1 ELSE 0 END), 0) AS students_count,
+        COALESCE(SUM(CASE WHEN category = 'doctor' THEN 1 ELSE 0 END), 0) AS doctors_count,
+        COALESCE(SUM(fee_amount), 0) AS total_amount
+      FROM participants
+      GROUP BY COALESCE(shift_number, 1)
+    `).all();
 
-    // Stats per Supervisor (including all configured supervisors + any historical supervisor names)
+    const byShifts = [1, 2].map((sNum) => {
+      const found = shiftAggs.find((r) => Number(r.shift_number) === sNum);
+      return {
+        shift_number: sNum,
+        shift_name: sNum === 1 ? (settings.shift_1_name || 'الفترة الأولى') : (settings.shift_2_name || 'الفترة الثانية'),
+        shift_time: sNum === 1 ? (settings.shift_1_short_time || '9:30 ص – 11:30 ص') : (settings.shift_2_short_time || '11:30 ص – 1:30 م'),
+        total_count: Number(found?.total_count || 0),
+        students_count: Number(found?.students_count || 0),
+        doctors_count: Number(found?.doctors_count || 0),
+        total_amount: Number(found?.total_amount || 0)
+      };
+    });
+
     const supervisors = db.prepare('SELECT id, name, is_active FROM supervisors ORDER BY id ASC').all();
     const supAggregates = db.prepare(`
       SELECT
@@ -916,6 +976,8 @@ app.get('/api/admin/dashboard', requireAdmin, (_req, res) => {
         COUNT(*) AS total_count,
         COALESCE(SUM(CASE WHEN category = 'student' THEN 1 ELSE 0 END), 0) AS students_count,
         COALESCE(SUM(CASE WHEN category = 'doctor' THEN 1 ELSE 0 END), 0) AS doctors_count,
+        COALESCE(SUM(CASE WHEN COALESCE(shift_number, 1) = 1 THEN 1 ELSE 0 END), 0) AS shift_1_count,
+        COALESCE(SUM(CASE WHEN COALESCE(shift_number, 1) = 2 THEN 1 ELSE 0 END), 0) AS shift_2_count,
         COALESCE(SUM(fee_amount), 0) AS registered_amount,
         COALESCE(SUM(CASE WHEN payment_status = 'confirmed' THEN fee_amount ELSE 0 END), 0) AS confirmed_amount
       FROM participants
@@ -926,14 +988,19 @@ app.get('/api/admin/dashboard', requireAdmin, (_req, res) => {
       const matching = supAggregates.filter(
         (ag) => ag.supervisor_id === s.id || (!ag.supervisor_id && ag.supervisor_name === s.name)
       );
+      const totalAmt = matching.reduce((acc, r) => acc + Number(r.registered_amount || 0), 0);
       return {
         supervisor_id: s.id,
         supervisor_name: s.name,
+        name: s.name,
         is_active: s.is_active === 1,
         total_count: matching.reduce((acc, r) => acc + Number(r.total_count || 0), 0),
         students_count: matching.reduce((acc, r) => acc + Number(r.students_count || 0), 0),
         doctors_count: matching.reduce((acc, r) => acc + Number(r.doctors_count || 0), 0),
-        registered_amount: matching.reduce((acc, r) => acc + Number(r.registered_amount || 0), 0),
+        shift_1_count: matching.reduce((acc, r) => acc + Number(r.shift_1_count || 0), 0),
+        shift_2_count: matching.reduce((acc, r) => acc + Number(r.shift_2_count || 0), 0),
+        registered_amount: totalAmt,
+        total_amount: totalAmt,
         confirmed_amount: matching.reduce((acc, r) => acc + Number(r.confirmed_amount || 0), 0)
       };
     });
@@ -943,14 +1010,19 @@ app.get('/api/admin/dashboard', requireAdmin, (_req, res) => {
         (s) => s.id === ag.supervisor_id || (!ag.supervisor_id && s.name === ag.supervisor_name)
       );
       if (!matched && ag.supervisor_name) {
+        const totalAmt = Number(ag.registered_amount || 0);
         registrationsBySupervisor.push({
           supervisor_id: null,
           supervisor_name: `${ag.supervisor_name} (سجل سابق)`,
+          name: `${ag.supervisor_name} (سجل سابق)`,
           is_active: false,
           total_count: Number(ag.total_count || 0),
           students_count: Number(ag.students_count || 0),
           doctors_count: Number(ag.doctors_count || 0),
-          registered_amount: Number(ag.registered_amount || 0),
+          shift_1_count: Number(ag.shift_1_count || 0),
+          shift_2_count: Number(ag.shift_2_count || 0),
+          registered_amount: totalAmt,
+          total_amount: totalAmt,
           confirmed_amount: Number(ag.confirmed_amount || 0)
         });
       }
@@ -960,7 +1032,8 @@ app.get('/api/admin/dashboard', requireAdmin, (_req, res) => {
       SELECT
         p.id, p.registration_number, p.name_ar, p.name_en, p.category, p.category_label,
         p.academic_year, p.fee_amount, p.payment_status, p.supervisor_name,
-        p.registration_day_name, p.registration_date, p.registration_time, p.source,
+        p.registration_day_name, p.shift_number, p.shift_name, p.shift_time,
+        p.registration_date, p.registration_time, p.source,
         CASE WHEN r.file_name IS NOT NULL AND r.file_name != '' THEN 1 ELSE 0 END AS has_receipt
       FROM participants p
       LEFT JOIN receipts r ON r.participant_id = p.id
@@ -974,6 +1047,10 @@ app.get('/api/admin/dashboard', requireAdmin, (_req, res) => {
         total_students: Number(summary.total_students || 0),
         total_doctors: Number(summary.total_doctors || 0),
         total_registered_amount: Number(summary.total_registered_amount || 0),
+        shift_1_count: Number(summary.shift_1_count || 0),
+        shift_1_amount: Number(summary.shift_1_amount || 0),
+        shift_2_count: Number(summary.shift_2_count || 0),
+        shift_2_amount: Number(summary.shift_2_amount || 0),
         total_confirmed_amount: Number(summary.total_confirmed_amount || 0),
         total_pending_amount: Number(summary.total_pending_amount || 0),
         total_flagged_amount: Number(summary.total_flagged_amount || 0),
@@ -985,6 +1062,9 @@ app.get('/api/admin/dashboard', requireAdmin, (_req, res) => {
         supervisors_count: supervisors.length,
         active_supervisors_count: supervisors.filter((s) => s.is_active === 1).length
       },
+      by_days: registrationsByDay,
+      by_shifts: byShifts,
+      by_supervisors: registrationsBySupervisor,
       registrations_by_day: registrationsByDay,
       registrations_by_supervisor: registrationsBySupervisor,
       recent_registrations: recentRegistrations
@@ -1165,6 +1245,7 @@ app.delete('/api/admin/supervisors/:id', requireAdmin, (req, res) => {
 
 app.get('/api/admin/days', requireAdmin, (_req, res) => {
   try {
+    const settings = getSettingsMap();
     const days = db.prepare(`
       SELECT
         rd.*,
@@ -1185,12 +1266,33 @@ app.get('/api/admin/days', requireAdmin, (_req, res) => {
       ORDER BY dsa.day_id ASC, dsa.slot_number ASC
     `).all();
 
+    const shiftsConfig = [
+      {
+        shift_number: 1,
+        shift_name: settings.shift_1_name || 'الفترة الأولى',
+        shift_time: settings.shift_1_time || '9:30 صباحاً – 11:30 صباحاً',
+        short_time: settings.shift_1_short_time || '9:30 ص – 11:30 ص'
+      },
+      {
+        shift_number: 2,
+        shift_name: settings.shift_2_name || 'الفترة الثانية',
+        shift_time: settings.shift_2_time || '11:30 صباحاً – 1:30 ظهراً',
+        short_time: settings.shift_2_short_time || '11:30 ص – 1:30 م'
+      }
+    ];
+
     const formattedDays = days.map((d) => {
       const slot1 = assignments.find((a) => a.day_id === d.id && a.slot_number === 1);
       const slot2 = assignments.find((a) => a.day_id === d.id && a.slot_number === 2);
+      const slot3 = assignments.find((a) => a.day_id === d.id && a.slot_number === 3);
+      const slot4 = assignments.find((a) => a.day_id === d.id && a.slot_number === 4);
       return {
         ...d,
         is_active: d.is_active === 1,
+        supervisor_1: slot1?.supervisor_id ? { id: slot1.supervisor_id, name: slot1.supervisor_name } : null,
+        supervisor_2: slot2?.supervisor_id ? { id: slot2.supervisor_id, name: slot2.supervisor_name } : null,
+        supervisor_3: slot3?.supervisor_id ? { id: slot3.supervisor_id, name: slot3.supervisor_name } : null,
+        supervisor_4: slot4?.supervisor_id ? { id: slot4.supervisor_id, name: slot4.supervisor_name } : null,
         slot_1: {
           supervisor_id: slot1?.supervisor_id || null,
           supervisor_name: slot1?.supervisor_name || null,
@@ -1200,14 +1302,40 @@ app.get('/api/admin/days', requireAdmin, (_req, res) => {
           supervisor_id: slot2?.supervisor_id || null,
           supervisor_name: slot2?.supervisor_name || null,
           supervisor_active: slot2?.supervisor_active === 1
+        },
+        slot_3: {
+          supervisor_id: slot3?.supervisor_id || null,
+          supervisor_name: slot3?.supervisor_name || null,
+          supervisor_active: slot3?.supervisor_active === 1
+        },
+        slot_4: {
+          supervisor_id: slot4?.supervisor_id || null,
+          supervisor_name: slot4?.supervisor_name || null,
+          supervisor_active: slot4?.supervisor_active === 1
         }
       };
     });
 
-    res.json({ days: formattedDays });
+    res.json({ days: formattedDays, shifts: shiftsConfig });
   } catch (err) {
     console.error('Get days error:', err);
     res.status(500).json({ error: 'تعذر جلب أيام التسجيل.' });
+  }
+});
+
+app.put('/api/admin/shifts', requireAdmin, (req, res) => {
+  try {
+    const { shift_1_name, shift_1_time, shift_1_short_time, shift_2_name, shift_2_time, shift_2_short_time } = req.body;
+    if (shift_1_name) setSetting('shift_1_name', String(shift_1_name).trim());
+    if (shift_1_time) setSetting('shift_1_time', String(shift_1_time).trim());
+    if (shift_1_short_time) setSetting('shift_1_short_time', String(shift_1_short_time).trim());
+    if (shift_2_name) setSetting('shift_2_name', String(shift_2_name).trim());
+    if (shift_2_time) setSetting('shift_2_time', String(shift_2_time).trim());
+    if (shift_2_short_time) setSetting('shift_2_short_time', String(shift_2_short_time).trim());
+    res.json({ success: true, message: 'تم تحديث بيانات الفترات الزمنية بنجاح.' });
+  } catch (err) {
+    console.error('Update shifts error:', err);
+    res.status(500).json({ error: 'تعذر تحديث الفترات الزمنية.' });
   }
 });
 
@@ -1305,27 +1433,34 @@ app.put('/api/admin/days/:id/assign', requireAdmin, (req, res) => {
 
     const sup1 = req.body.supervisor_1_id ? Number(req.body.supervisor_1_id) : null;
     const sup2 = req.body.supervisor_2_id ? Number(req.body.supervisor_2_id) : null;
+    const sup3 = req.body.supervisor_3_id ? Number(req.body.supervisor_3_id) : null;
+    const sup4 = req.body.supervisor_4_id ? Number(req.body.supervisor_4_id) : null;
 
     if (sup1 && sup2 && sup1 === sup2) {
       return res.status(400).json({
-        error: 'لا يمكن تعيين نفس المشرف كمقر أول ومقر ثانٍ في نفس اليوم. يجب اختيار مشرفين اثنين مختلفين.'
+        error: 'لا يمكن تعيين نفس المشرف مرتين في الفترة الأولى. يجب اختيار مشرفين اثنين مختلفين.'
+      });
+    }
+    if (sup3 && sup4 && sup3 === sup4) {
+      return res.status(400).json({
+        error: 'لا يمكن تعيين نفس المشرف مرتين في الفترة الثانية. يجب اختيار مشرفين اثنين مختلفين.'
       });
     }
 
     const now = getLibyaDateTime().fullTimestamp;
     const upsertSlot = db.prepare(`
-      INSERT INTO day_supervisor_assignments (day_id, slot_number, supervisor_id, updated_at)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO day_supervisor_assignments (day_id, shift_number, slot_number, supervisor_id, updated_at)
+      VALUES (?, ?, ?, ?, ?)
       ON CONFLICT(day_id, slot_number) DO UPDATE SET
+        shift_number = excluded.shift_number,
         supervisor_id = excluded.supervisor_id,
         updated_at = excluded.updated_at
     `);
 
-    upsertSlot.run(dayId, 1, sup1, now);
-    upsertSlot.run(dayId, 2, sup2, now);
-
-    const sup1Name = sup1 ? (db.prepare('SELECT name FROM supervisors WHERE id = ?').get(sup1)?.name || 'غير معروف') : 'فارغ';
-    const sup2Name = sup2 ? (db.prepare('SELECT name FROM supervisors WHERE id = ?').get(sup2)?.name || 'غير معروف') : 'فارغ';
+    upsertSlot.run(dayId, 1, 1, sup1, now);
+    upsertSlot.run(dayId, 1, 2, sup2, now);
+    upsertSlot.run(dayId, 2, 3, sup3, now);
+    upsertSlot.run(dayId, 2, 4, sup4, now);
 
     logAudit({
       actorRole: 'admin',
@@ -1333,7 +1468,7 @@ app.put('/api/admin/days/:id/assign', requireAdmin, (req, res) => {
       actionType: 'ASSIGN_DAY_SUPERVISORS',
       targetType: 'registration_day',
       targetId: dayId,
-      description: `تحديث توزيع مشرفي يوم ${day.day_name}: المشرف الأول (${sup1Name})، المشرف الثاني (${sup2Name})`
+      description: `تحديث توزيع مشرفي يوم ${day.day_name} (الفترة الأولى والفترة الثانية)`
     });
 
     res.json({
@@ -1410,7 +1545,10 @@ app.get('/api/admin/participants', requireAdmin, (req, res) => {
     const {
       search = '',
       day = '',
+      day_id = '',
+      shift_number = '',
       supervisor = '',
+      supervisor_id = '',
       category = '',
       academic_year = '',
       payment_status = '',
@@ -1428,14 +1566,21 @@ app.get('/api/admin/participants', requireAdmin, (req, res) => {
       params.push(q, q, q);
     }
 
-    if (day && String(day).trim() !== '') {
+    const dayFilter = String(day || day_id || '').trim();
+    if (dayFilter !== '') {
       conditions.push('(p.registration_day_name = ? OR CAST(p.registration_day_id AS TEXT) = ?)');
-      params.push(String(day).trim(), String(day).trim());
+      params.push(dayFilter, dayFilter);
     }
 
-    if (supervisor && String(supervisor).trim() !== '') {
+    if (shift_number && ['1', '2'].includes(String(shift_number).trim())) {
+      conditions.push('COALESCE(p.shift_number, 1) = ?');
+      params.push(Number(shift_number));
+    }
+
+    const supFilter = String(supervisor || supervisor_id || '').trim();
+    if (supFilter !== '') {
       conditions.push('(p.supervisor_name = ? OR CAST(p.supervisor_id AS TEXT) = ?)');
-      params.push(String(supervisor).trim(), String(supervisor).trim());
+      params.push(supFilter, supFilter);
     }
 
     if (category && ['student', 'doctor'].includes(String(category))) {
@@ -1478,6 +1623,7 @@ app.get('/api/admin/participants', requireAdmin, (req, res) => {
         r.verification_status AS receipt_verification_status,
         r.verified_by AS receipt_verified_by,
         r.verified_at AS receipt_verified_at,
+        CASE WHEN r.file_name IS NOT NULL AND r.file_name != '' THEN 1 ELSE 0 END AS has_receipt,
         CASE WHEN r.file_name IS NOT NULL AND r.file_name != '' THEN 1 ELSE 0 END AS has_receipt_image
       FROM participants p
       LEFT JOIN receipts r ON r.participant_id = p.id
