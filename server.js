@@ -458,12 +458,6 @@ app.post('/api/auth/supervisor/logout', (_req, res) => {
 
 app.post('/api/registration/check-duplicate', (req, res) => {
   try {
-    const sup = getSupervisorAuth(req);
-    const admin = getAdminAuth(req);
-    if (!sup && !admin) {
-      return res.status(401).json({ error: 'يرجى اختيار يوم التسجيل واسم المشرف أولاً.' });
-    }
-
     const { name_ar, name_en } = req.body;
     const duplicates = checkSimilarity(name_ar, name_en);
     res.json({
@@ -569,6 +563,7 @@ app.post('/api/registration/submit', (req, res) => {
         'السنة الثانية',
         'السنة الثالثة',
         'السنة الرابعة',
+        'الامتياز',
         'سنة الامتياز'
       ];
 

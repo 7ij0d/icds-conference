@@ -596,11 +596,6 @@ apiRouter.post('/auth/supervisor/select', async (req, res) => {
 // 3. REGISTRATION & DUPLICATE CHECK
 apiRouter.post('/registration/check-duplicate', async (req, res) => {
   try {
-    const sup = getSupervisorAuth(req);
-    const admin = getAdminAuth(req);
-    if (!sup && !admin) {
-      return res.status(401).json({ error: 'يرجى اختيار يوم التسجيل واسم المشرف أولاً.' });
-    }
     const { name_ar, name_en } = req.body;
     const duplicates = await checkSimilarity(name_ar, name_en);
     res.json({ has_duplicates: duplicates.length > 0, duplicates });
@@ -694,7 +689,7 @@ apiRouter.post('/registration/submit', (req, res) => {
         return res.status(400).json({ field: 'category', error: 'يرجى تحديد تصنيف المشارك (طالب أو دكتور).' });
       }
 
-      const validYears = ['السنة الأولى', 'السنة الثانية', 'السنة الثالثة', 'السنة الرابعة', 'سنة الامتياز'];
+      const validYears = ['السنة الأولى', 'السنة الثانية', 'السنة الثالثة', 'السنة الرابعة', 'الامتياز', 'سنة الامتياز'];
       let finalAcademicYear = '';
       if (category === 'student') {
         if (!academic_year || !validYears.includes(academic_year)) {

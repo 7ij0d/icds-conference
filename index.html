@@ -1,1212 +1,611 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="dark">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-  <title>مؤتمر ICDS لطب الأسنان – النسخة الرابعة | نظام التسجيل والإدارة</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مؤتمر ICDS الدولي لطب الأسنان – النسخة الرابعة | تسجيل المشاركين</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
-  <header class="top-navbar">
-    <div class="navbar-inner">
-      <div class="brand-identity" id="nav-brand-home" role="button" tabindex="0" aria-label="العودة إلى الصفحة الرئيسية">
-        <div class="brand-logo-box">
-          <!-- Custom Dental & Conference Crest SVG -->
-          <svg class="brand-logo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2.5C8.5 2.5 5.5 4.8 5.5 8.2c0 2.4 1.1 4.2 1.8 6.4.6 1.9 1.1 4.9 2.3 4.9 1.1 0 1.4-2.8 2.4-2.8s1.3 2.8 2.4 2.8c1.2 0 1.7-3 2.3-4.9.7-2.2 1.8-4 1.8-6.4 0-3.4-3-5.7-6.5-5.7z" />
-            <path d="M9 7.5c1.5 1 4.5 1 6 0" />
+  <!-- ================= HEADER ================= -->
+  <header class="site-header">
+    <div class="header-inner">
+      <!-- Right side: Conference Branding -->
+      <div class="brand-wrap" id="brand-logo-btn" role="button" tabindex="0" aria-label="مؤتمر ICDS الدولي لطب الأسنان">
+        <div class="brand-ar">
+          <span class="brand-ar-line1">مؤتمر ICDS الدولي</span>
+          <span class="brand-ar-line2">لطب الأسنان</span>
+          <span class="brand-edition-pill">النسخة الرابعة</span>
+        </div>
+
+        <!-- Dental Tooth Swoosh Icon -->
+        <div class="brand-tooth-icon" aria-hidden="true">
+          <svg viewBox="0 0 64 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20.5 9.5C14.5 9.5 10.5 14.5 11.2 21.8C11.8 28.2 14.8 35.4 17.2 43.2C18.4 47.1 20.3 49.5 22.4 49.5C24.5 49.5 25.8 46.2 27.1 41.2C28.2 37.1 29.8 35.2 32 35.2C34.2 35.2 35.8 37.1 36.9 41.2C38.2 46.2 39.5 49.5 41.6 49.5C43.7 49.5 45.6 47.1 46.8 43.2C49.2 35.4 52.2 28.2 52.8 21.8C53.5 14.5 49.5 9.5 43.5 9.5C39.2 9.5 35.8 11.8 32 11.8C28.2 11.8 24.8 9.5 20.5 9.5Z" stroke="#133247" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M18 14.5C23.5 18.5 31.5 19.2 41.5 15.2" stroke="#086d75" stroke-width="2.8" stroke-linecap="round"/>
+            <path d="M6 46.5C19.5 37.5 39.5 31.5 59 29.5C44.5 35.5 25.5 43.5 10.5 52.5" fill="#086d75" opacity="0.85"/>
           </svg>
         </div>
-        <div class="brand-titles">
-          <div class="brand-main-title">
-            <span id="header-conf-title">مؤتمر ICDS الدولي لطب الأسنان</span>
-            <span class="edition-pill" id="header-conf-edition">النسخة الرابعة</span>
-          </div>
-          <span class="brand-sub-title" id="header-conf-subtitle">نظام التسجيل الإلكتروني الموحد للمشاركين والمشرفين</span>
+
+        <span class="brand-divider" aria-hidden="true"></span>
+
+        <div class="brand-en" dir="ltr">
+          <span class="brand-en-title">ICDS</span>
+          <span class="brand-en-sub">4th Edition</span>
         </div>
       </div>
 
-      <div class="navbar-actions">
-        <div class="time-indicator" title="التوقيت الرسمي المعتمد للتسجيل (توقيت ليبيا)">
-          <span class="pulse-dot"></span>
-          <span>توقيت ليبيا:</span>
-          <strong class="metric-num" id="libya-clock-display">--:--</strong>
-        </div>
-
-        <button type="button" class="btn btn-ghost btn-sm" id="nav-btn-home">
-          الرئيسية
+      <!-- Left and Center Navigation (Desktop) -->
+      <nav class="main-nav" id="main-nav" aria-label="القائمة الرئيسية">
+        <button type="button" class="nav-link" data-nav="home" id="nav-home">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 10.5L12 3l9 7.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5 9.5V20a1 1 0 001 1h4.5v-6h3v6H18a1 1 0 001-1V9.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>الرئيسية</span>
         </button>
 
-        <button type="button" class="btn btn-primary btn-sm" id="nav-btn-supervisor">
-          تسجيل المشاركين
+        <button type="button" class="nav-link active" data-nav="register" id="nav-register">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9.5" cy="8" r="3.8"/>
+            <path d="M3 19.5c0-3.3 3-5.8 6.5-5.8s6.5 2.5 6.5 5.8" stroke-linecap="round"/>
+            <path d="M19 8v6M16 11h6" stroke-linecap="round"/>
+          </svg>
+          <span>تسجيل المشاركين</span>
         </button>
 
-        <button type="button" class="btn btn-secondary btn-sm" id="nav-btn-admin">
-          لوحة الأدمن
+        <button type="button" class="nav-link" data-nav="admin" id="nav-admin">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3.2"/>
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>لوحة الأدمن</span>
         </button>
+      </nav>
 
-        <button type="button" class="btn btn-ghost btn-sm" id="btn-theme-toggle" title="تبديل المظهر (داكن / فاتح)">
-          <span id="theme-toggle-label">المظهر الفاتح</span>
-        </button>
-      </div>
+      <!-- Mobile Hamburger Menu Icon -->
+      <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="فتح القائمة" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Navigation Dropdown -->
+    <div class="mobile-nav-drawer hidden" id="mobile-nav-drawer">
+      <button type="button" class="mobile-nav-item" data-nav="home">الرئيسية</button>
+      <button type="button" class="mobile-nav-item active" data-nav="register">تسجيل المشاركين</button>
+      <button type="button" class="mobile-nav-item" data-nav="admin">لوحة الأدمن</button>
     </div>
   </header>
 
-  <!-- Main Workspace Container -->
-  <main class="main-container">
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="page-main">
 
-    <!-- ====================================================================
-         VIEW 1: CONFERENCE HOME PAGE
-         ==================================================================== -->
-    <section id="view-home">
-      <div class="hero-bento">
-        <!-- Main Conference Hero Card -->
-        <div class="hero-main-card">
-          <div>
-            <div class="hero-badge-row">
-              <span class="conference-badge">ICDS 4th Edition • مؤتمر طب الأسنان</span>
-              <span class="status-pill pill-success" id="home-reg-status-badge">التسجيل متاح للمشرفين</span>
-            </div>
-
-            <h1 class="hero-heading" id="home-hero-title">
-              بوابة تسجيل المشاركين في مؤتمر ICDS لطب الأسنان – النسخة الرابعة
-            </h1>
-
-            <p class="hero-description" id="home-hero-desc">
-              المنصة الإلكترونية الرسمية المخصصة لمشرفي التسجيل وإدارة المؤتمر لتسجيل الطلبة والدكاترة، توثيق إيصالات الدفع، ومتابعة التقارير المالية اللحظية بدقة وأمان.
-            </p>
-
-            <div class="hero-cta-group">
-              <button type="button" class="btn btn-primary btn-lg" id="hero-btn-start-reg">
-                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
-                </svg>
-                <span>الدخول إلى تسجيل المشاركين</span>
-              </button>
-
-              <button type="button" class="btn btn-secondary btn-lg" id="hero-btn-open-admin">
-                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                </svg>
-                <span>لوحة تحكم الأدمن</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="hero-features-strip">
-            <div class="feature-mini">
-              <span class="feature-mini-title">توزيع يومي للمشرفين</span>
-              <span class="feature-mini-desc">مشرفان مخصصان لكل يوم تسجيل من الأحد إلى الخميس</span>
-            </div>
-            <div class="feature-mini">
-              <span class="feature-mini-title">توثيق فوري للإيصالات</span>
-              <span class="feature-mini-desc">تصوير مباشر بالكاميرا أو رفع من المعرض بحفظ آمن</span>
-            </div>
-            <div class="feature-mini">
-              <span class="feature-mini-title">حساب آلي وتوقيت دقيق</span>
-              <span class="feature-mini-desc">احتساب تلقائي للرسوم وتوثيق بالتاريخ والوقت لتوقيت ليبيا</span>
-            </div>
-          </div>
+    <!-- 1. REGISTRATION VIEW (DEFAULT ACTIVE VIEW MATCHING REFERENCE IMAGE) -->
+    <section id="view-register" class="view-section active">
+      <div class="reg-card">
+        <!-- Subtle Top-Left Tooth Watermark (Desktop Reference Match) -->
+        <div class="card-tooth-watermark" aria-hidden="true">
+          <svg viewBox="0 0 180 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M58 20C43 20 33 32 35 50C37 66 44 84 50 103C53 112 58 118 63 118C68 118 71 110 75 98C78 88 82 83 87 83C92 83 96 88 99 98C103 110 106 118 111 118C116 118 121 112 124 103C130 84 137 66 139 50C141 32 131 20 116 20C105 20 96 26 87 26C78 26 69 20 58 20Z" stroke="#0b727a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M51 33C65 43 85 45 110 35" stroke="#0b727a" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M12 118C48 92 104 72 166 64C122 82 68 104 24 130Z" fill="#0b727a"/>
+          </svg>
         </div>
 
-        <!-- Side Column: Live Database Stats & Official Fees -->
-        <div class="hero-side-column">
-          <div class="panel-card">
-            <div class="panel-header">
-              <div>
-                <h2 class="panel-title">إحصائيات التسجيل المباشرة</h2>
-                <p class="panel-subtitle">محسوبة لحظياً من قاعدة البيانات الرسمية</p>
-              </div>
-              <span class="overline-label">LIVE DB</span>
+        <!-- Registration Title Header -->
+        <div class="reg-card-header">
+          <div class="reg-title-row">
+            <div class="reg-title-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="5" y="4" width="14" height="17" rx="2.5"/>
+                <path d="M9 4.5h6a1 1 0 001-1v-.5a1 1 0 00-1-1H9a1 1 0 00-1 1v.5a1 1 0 001 1z"/>
+                <circle cx="15.5" cy="17.5" r="2.5" fill="#e0f2f2" stroke="currentColor" stroke-width="1.8"/>
+              </svg>
             </div>
-
-            <div class="stats-grid-2x2">
-              <div class="stat-tile">
-                <span class="stat-tile-label">إجمالي المسجلين</span>
-                <span class="stat-tile-value metric-num" id="home-stat-total">0</span>
-                <span class="stat-tile-sub">مشارك مسجل</span>
-              </div>
-              <div class="stat-tile">
-                <span class="stat-tile-label">فئة الطلبة</span>
-                <span class="stat-tile-value metric-num text-accent" id="home-stat-students">0</span>
-                <span class="stat-tile-sub">طالب طب أسنان</span>
-              </div>
-              <div class="stat-tile">
-                <span class="stat-tile-label">فئة الدكاترة</span>
-                <span class="stat-tile-value metric-num text-warning" id="home-stat-doctors">0</span>
-                <span class="stat-tile-sub">دكتور وخريج</span>
-              </div>
-              <div class="stat-tile">
-                <span class="stat-tile-label">أيام التسجيل الفعالة</span>
-                <span class="stat-tile-value metric-num text-success" id="home-stat-days">0</span>
-                <span class="stat-tile-sub">الأحد – الخميس</span>
-              </div>
-            </div>
+            <h1 class="reg-title">تسجيل المشاركين</h1>
           </div>
-
-          <div class="panel-card">
-            <div class="panel-header">
-              <div>
-                <h2 class="panel-title">فئات ورسوم التسجيل المعتمدة</h2>
-                <p class="panel-subtitle">تُحتسب تلقائياً عند اختيار تصنيف المشارك</p>
-              </div>
-            </div>
-
-            <div class="fee-reference-list">
-              <div class="fee-item-row">
-                <div class="fee-item-info">
-                  <span class="fee-item-title">فئة الطالب (Student)</span>
-                  <span class="fee-item-note">تشمل: السنة الأولى، الثانية، الثالثة، الرابعة، وسنة الامتياز</span>
-                </div>
-                <span class="fee-item-price metric-num" id="home-fee-student">30 د.ل</span>
-              </div>
-
-              <div class="fee-item-row doctor-tier">
-                <div class="fee-item-info">
-                  <span class="fee-item-title">فئة الدكتور (Doctor)</span>
-                  <span class="fee-item-note">تشمل: الأطباء الدكاترة والخريجين</span>
-                </div>
-                <span class="fee-item-price metric-num" id="home-fee-doctor">60 د.ل</span>
-              </div>
-            </div>
-          </div>
+          <p class="reg-subtitle">تسجيل بيانات مشاركة جديدة في مؤتمر ICDS لطب الأسنان – النسخة الرابعة.</p>
         </div>
+
+        <div class="reg-divider"></div>
+
+        <!-- Registration Form -->
+        <form id="registration-form" class="reg-form" novalidate>
+
+          <!-- Step 1: Registration Day Selector -->
+          <div class="form-block day-selector-block">
+            <label class="field-label">اختر يوم التسجيل <span class="req">*</span></label>
+            <div class="day-buttons-row" id="day-buttons-container" role="radiogroup" aria-label="اختر يوم التسجيل">
+              <button type="button" class="day-btn active" data-day-name="الأحد">الأحد</button>
+              <button type="button" class="day-btn" data-day-name="الاثنين">الاثنين</button>
+              <button type="button" class="day-btn" data-day-name="الثلاثاء">الثلاثاء</button>
+              <button type="button" class="day-btn" data-day-name="الأربعاء">الأربعاء</button>
+              <button type="button" class="day-btn" data-day-name="الخميس">الخميس</button>
+            </div>
+          </div>
+
+          <!-- Step 2: Supervisor Selection -->
+          <div class="form-block supervisor-row-block">
+            <label class="field-label supervisor-inline-label" for="reg-supervisor-select">اختر المشرف <span class="req">*</span></label>
+            <div class="select-field-wrap">
+              <select id="reg-supervisor-select" class="form-select" required>
+                <option value="">اختر اسم المشرف</option>
+              </select>
+              <span class="select-chevron" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5.5 7.5L10 12l4.5-4.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <!-- Step 3: Participant Name Fields (Arabic & English) -->
+          <div class="form-grid-two names-row-block">
+            <!-- Arabic Name (Right Column on Desktop, First on Mobile) -->
+            <div class="form-block">
+              <label class="field-label" for="reg-name-ar">الاسم بالعربي <span class="req">*</span></label>
+              <div class="input-with-icon">
+                <span class="input-icon-right" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="8" r="3.8"/>
+                    <path d="M5 19.5c0-3.3 3.1-5.8 7-5.8s7 2.5 7 5.8" stroke-linecap="round"/>
+                  </svg>
+                </span>
+                <input
+                  type="text"
+                  id="reg-name-ar"
+                  class="form-input"
+                  placeholder="أدخل الاسم الكامل بالعربي"
+                  autocomplete="off"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- English Name (Left Column on Desktop, Second on Mobile) -->
+            <div class="form-block">
+              <label class="field-label" for="reg-name-en">الاسم بالانجليزي <span class="req">*</span></label>
+              <div class="input-with-icon">
+                <span class="input-icon-right" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="8" r="3.8"/>
+                    <path d="M5 19.5c0-3.3 3.1-5.8 7-5.8s7 2.5 7 5.8" stroke-linecap="round"/>
+                  </svg>
+                </span>
+                <input
+                  type="text"
+                  id="reg-name-en"
+                  class="form-input"
+                  placeholder="أدخل الاسم الكامل بالإنجليزي"
+                  autocomplete="off"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4: Participant Category & Academic Year -->
+          <div class="form-grid-two category-year-row-block">
+            <!-- Participant Category (Right Column on Desktop) -->
+            <div class="form-block">
+              <label class="field-label">نوع المشارك <span class="req">*</span></label>
+              <div class="category-options" role="radiogroup" aria-label="نوع المشارك">
+                <button type="button" class="category-option active" data-category="student" id="cat-btn-student">
+                  <span class="radio-indicator"></span>
+                  <span class="category-text">طالب</span>
+                </button>
+                <button type="button" class="category-option" data-category="doctor" id="cat-btn-doctor">
+                  <span class="radio-indicator"></span>
+                  <span class="category-text">دكتور</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Academic Year (Left Column on Desktop, Hidden when Doctor is selected) -->
+            <div class="form-block" id="academic-year-block">
+              <label class="field-label" for="reg-academic-year">السنة الدراسية <span class="req">*</span></label>
+              <div class="select-field-wrap">
+                <select id="reg-academic-year" class="form-select">
+                  <option value="">اختر السنة الدراسية</option>
+                  <option value="السنة الأولى">السنة الأولى</option>
+                  <option value="السنة الثانية">السنة الثانية</option>
+                  <option value="السنة الثالثة">السنة الثالثة</option>
+                  <option value="السنة الرابعة">السنة الرابعة</option>
+                  <option value="الامتياز">الامتياز</option>
+                </select>
+                <span class="select-chevron" aria-hidden="true">
+                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5.5 7.5L10 12l4.5-4.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5: Receipt Upload & Registration Fee -->
+          <div class="form-grid-two receipt-fee-row-block">
+            <!-- Payment Receipt Upload (Right Column on Desktop, Below Fee on Mobile) -->
+            <div class="form-block receipt-upload-col">
+              <label class="field-label">إرفاق إيصال الدفع <span class="req">*</span></label>
+              <input
+                type="file"
+                id="reg-receipt-input"
+                accept="image/jpeg,image/png,image/webp,image/*"
+                class="sr-only-file"
+              />
+              <button type="button" class="receipt-upload-btn" id="receipt-trigger-btn">
+                <svg class="upload-cloud-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-1" stroke-linecap="round" stroke-linejoin="round"/>
+                  <polyline points="9 15 12 12 15 15" stroke-linecap="round" stroke-linejoin="round"/>
+                  <line x1="12" y1="12" x2="12" y2="21" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span id="receipt-btn-label">إرفاق إيصال الدفع</span>
+              </button>
+
+              <!-- Compact Inline Receipt Preview when selected -->
+              <div id="receipt-preview-bar" class="receipt-preview-bar hidden">
+                <img id="receipt-thumb-img" src="" alt="معاينة الإيصال" class="receipt-thumb" />
+                <div class="receipt-preview-meta">
+                  <span id="receipt-file-name" class="receipt-file-name"></span>
+                  <div class="receipt-preview-actions">
+                    <button type="button" id="receipt-view-full-btn" class="receipt-mini-btn">معاينة</button>
+                    <button type="button" id="receipt-camera-btn" class="receipt-mini-btn">الكاميرا</button>
+                    <button type="button" id="receipt-clear-btn" class="receipt-mini-btn danger">حذف</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Registration Fee Box (Left Column on Desktop, Above Receipt on Mobile) -->
+            <div class="fee-display-col">
+              <div class="fee-box">
+                <div class="fee-box-icon" aria-hidden="true">
+                  <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.9">
+                    <ellipse cx="14" cy="7.5" rx="8.5" ry="3.5"/>
+                    <path d="M5.5 7.5v4.5c0 1.93 3.8 3.5 8.5 3.5s8.5-1.57 8.5-3.5V7.5"/>
+                    <path d="M5.5 12v4.5c0 1.93 3.8 3.5 8.5 3.5s8.5-1.57 8.5-3.5V12"/>
+                    <path d="M5.5 16.5V21c0 1.93 3.8 3.5 8.5 3.5s8.5-1.57 8.5-3.5v-4.5"/>
+                  </svg>
+                </div>
+                <div class="fee-box-text">
+                  <span class="fee-box-label">رسوم التسجيل</span>
+                  <strong class="fee-box-amount" id="reg-fee-display">30 د.ل</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Inline Feedback / Error / Success Alert -->
+          <div id="reg-feedback-box" class="reg-feedback hidden" role="alert"></div>
+
+          <!-- Step 6: Submit Button -->
+          <button type="submit" class="submit-participant-btn" id="reg-submit-btn">
+            <svg class="submit-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+              <circle cx="9.5" cy="8" r="3.8"/>
+              <path d="M3 19.5c0-3.3 3-5.8 6.5-5.8s6.5 2.5 6.5 5.8" stroke-linecap="round"/>
+              <path d="M19 8v6M16 11h6" stroke-linecap="round"/>
+            </svg>
+            <span id="reg-submit-text">تسجيل المشارك</span>
+          </button>
+
+        </form>
       </div>
+    </section>
 
-      <!-- Schedule Overview on Home Page -->
-      <div class="panel-card" style="margin-block-start: 1.5rem;">
-        <div class="panel-header">
-          <div>
-            <h2 class="panel-title">جدول أيام التسجيل والمشرفين المعتمدين</h2>
-            <p class="panel-subtitle">يتم تحديث توزيع المشرفين تلقائياً من لوحة تحكم الأدمن</p>
+    <!-- 2. HOME VIEW (MINIMAL CONFERENCE LANDING CARD) -->
+    <section id="view-home" class="view-section hidden">
+      <div class="reg-card home-minimal-card">
+        <div class="reg-card-header">
+          <div class="reg-title-row">
+            <div class="reg-title-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="5" y="4" width="14" height="17" rx="2.5"/>
+                <path d="M9 4.5h6a1 1 0 001-1v-.5a1 1 0 00-1-1H9a1 1 0 00-1 1v.5a1 1 0 001 1z"/>
+              </svg>
+            </div>
+            <h2 class="reg-title">مؤتمر ICDS الدولي لطب الأسنان</h2>
           </div>
-          <button type="button" class="btn btn-primary btn-sm" id="home-schedule-go-reg">
-            بدء التسجيل الآن
+          <p class="reg-subtitle">النسخة الرابعة – نظام تسجيل المشاركين وإدارة المؤتمر</p>
+        </div>
+
+        <div class="reg-divider"></div>
+
+        <div class="home-actions-stack">
+          <button type="button" class="submit-participant-btn" id="home-go-register-btn">
+            <svg class="submit-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+              <circle cx="9.5" cy="8" r="3.8"/>
+              <path d="M3 19.5c0-3.3 3-5.8 6.5-5.8s6.5 2.5 6.5 5.8" stroke-linecap="round"/>
+              <path d="M19 8v6M16 11h6" stroke-linecap="round"/>
+            </svg>
+            <span>الدخول إلى تسجيل المشاركين</span>
+          </button>
+
+          <button type="button" class="receipt-upload-btn home-admin-btn" id="home-go-admin-btn">
+            <span>الدخول إلى لوحة الأدمن</span>
           </button>
         </div>
-        <div class="days-selection-grid" id="home-days-overview-grid"></div>
       </div>
     </section>
 
-    <!-- ====================================================================
-         VIEW 2: SUPERVISOR REGISTRATION PORTAL
-         ==================================================================== -->
-    <section id="view-supervisor" class="is-hidden">
-      <div class="wizard-Container">
+    <!-- 3. ADMIN VIEW (CLEAN MINIMAL LIGHT INTERFACE MATCHING REFERENCE) -->
+    <section id="view-admin" class="view-section hidden">
 
-        <!-- 3-Step Progress Bar -->
-        <div class="stepper-bar">
-          <div class="stepper-item is-active" id="step-indicator-1">
-            <span class="stepper-num metric-num">1</span>
-            <div class="stepper-text">
-              <span class="stepper-label">الخطوة الأولى</span>
-              <span class="stepper-title">اختيار يوم التسجيل</span>
+      <!-- Admin Login Card -->
+      <div id="admin-login-card" class="reg-card admin-login-card">
+        <div class="reg-card-header">
+          <div class="reg-title-row">
+            <div class="reg-title-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="4" y="11" width="16" height="10" rx="2"/>
+                <path d="M8 11V7a4 4 0 018 0v4"/>
+              </svg>
             </div>
+            <h2 class="reg-title">لوحة الأدمن</h2>
           </div>
-          <div class="stepper-item" id="step-indicator-2">
-            <span class="stepper-num metric-num">2</span>
-            <div class="stepper-text">
-              <span class="stepper-label">الخطوة الثانية</span>
-              <span class="stepper-title">اختيار المشرف</span>
-            </div>
-          </div>
-          <div class="stepper-item" id="step-indicator-3">
-            <span class="stepper-num metric-num">3</span>
-            <div class="stepper-text">
-              <span class="stepper-label">الخطوة الثالثة</span>
-              <span class="stepper-title">بيانات المشارك والإيصال</span>
-            </div>
-          </div>
+          <p class="reg-subtitle">تسجيل الدخول لإدارة المشرفين والتسجيلات والإيصالات والتقارير.</p>
         </div>
 
-        <!-- STEP 1 & 2 PANEL: Select Day & Select Supervisor -->
-        <div class="panel-card" id="sup-selection-panel">
-          <div class="panel-header">
-            <div>
-              <h2 class="panel-title">بوابة المشرفين – تحديد يوم التسجيل والمشرف المسؤول</h2>
-              <p class="panel-subtitle">اختر يوم التسجيل أولاً لعرض المشرفين الاثنين المخصصين لهذا اليوم</p>
-            </div>
+        <div class="reg-divider"></div>
+
+        <form id="admin-login-form" class="reg-form">
+          <div class="form-block">
+            <label class="field-label" for="admin-username">اسم المستخدم <span class="req">*</span></label>
+            <input type="text" id="admin-username" class="form-input plain-input" placeholder="أدخل اسم المستخدم" required />
           </div>
 
-          <!-- Step 1: Day Selection -->
-          <div class="form-group">
-            <label class="form-label">
-              <span>1. اختر يوم التسجيل <span class="required-star">*</span></span>
-              <span class="form-hint">الأيام المعتمدة من إدارة المؤتمر</span>
-            </label>
-            <div class="days-selection-grid" id="sup-days-grid"></div>
+          <div class="form-block">
+            <label class="field-label" for="admin-password">كلمة المرور <span class="req">*</span></label>
+            <input type="password" id="admin-password" class="form-input plain-input" placeholder="أدخل كلمة المرور" required />
           </div>
 
-          <!-- Step 2: Supervisor Selection (Shown once a day is clicked) -->
-          <div id="sup-step2-container" class="is-hidden" style="margin-block-start: 1.5rem; padding-block-start: 1.25rem; border-block-start: 1px solid var(--border-subtle);">
-            <label class="form-label">
-              <span>2. اختر اسم المشرف المخصص ليوم (<span id="selected-day-label" class="text-accent"></span>) <span class="required-star">*</span></span>
-              <span class="form-hint">يظهر المشرفان المخصصان لهذا اليوم فقط</span>
-            </label>
+          <div id="admin-login-error" class="reg-feedback error hidden"></div>
 
-            <div id="sup-two-slots-container"></div>
-
-            <!-- Optional Portal Code or Supervisor PIN if enabled by Admin -->
-            <div id="sup-auth-extra-fields" class="form-grid-2 is-hidden" style="margin-block-top: 1rem;">
-              <div class="form-group is-hidden" id="sup-portal-code-group">
-                <label class="form-label" for="sup-portal-code-input">رمز بوابة المشرفين <span class="required-star">*</span></label>
-                <input type="password" id="sup-portal-code-input" class="form-input" placeholder="أدخل رمز البوابة العام" />
-              </div>
-              <div class="form-group is-hidden" id="sup-personal-pin-group">
-                <label class="form-label" for="sup-personal-pin-input">الرمز السري للمشرف <span class="required-star">*</span></label>
-                <input type="password" id="sup-personal-pin-input" class="form-input" placeholder="أدخل الرمز السري الخاص بك" />
-              </div>
-            </div>
-
-            <div style="margin-block-top: 1.25rem; display: flex; justify-content: flex-end;">
-              <button type="button" class="btn btn-primary btn-lg" id="btn-confirm-supervisor-step" disabled>
-                <span>المتابعة إلى نموذج تسجيل المشاركين</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- STEP 3 PANEL: Participant Registration Form -->
-        <div id="sup-registration-panel" class="is-hidden">
-          <!-- Active Supervisor Context Banner -->
-          <div class="supervisor-context-bar">
-            <div class="context-details">
-              <div class="context-chip">
-                <span class="context-chip-label">يوم التسجيل:</span>
-                <span class="status-pill pill-info" id="active-context-day">—</span>
-              </div>
-              <div class="context-chip">
-                <span class="context-chip-label">المشرف المسجل:</span>
-                <span class="context-chip-val" id="active-context-supervisor">—</span>
-              </div>
-              <div class="context-chip">
-                <span class="context-chip-label">تسجيلاتي في هذا اليوم:</span>
-                <span class="status-pill pill-success metric-num" id="active-context-count">0</span>
-              </div>
-            </div>
-
-            <div style="display: flex; gap: 0.5rem;">
-              <button type="button" class="btn btn-secondary btn-sm" id="btn-toggle-my-registrations">
-                عرض تسجيلاتي (<span class="metric-num" id="my-total-reg-badge">0</span>)
-              </button>
-              <button type="button" class="btn btn-ghost btn-sm" id="btn-change-supervisor">
-                تغيير اليوم / المشرف
-              </button>
-            </div>
-          </div>
-
-          <!-- Success Banner after Registration (Ready for next participant without reload) -->
-          <div id="reg-success-alert" class="panel-card is-hidden" style="margin-block-end: 1.25rem; border-color: var(--status-success); background: var(--status-success-soft);">
-            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-              <div>
-                <div style="display: flex; align-items: center; gap: 0.6rem;">
-                  <span class="status-pill pill-success">تم التسجيل بنجاح</span>
-                  <strong class="metric-num" style="font-size: 1.15rem;" id="success-reg-number">ICDS4-0001</strong>
-                </div>
-                <p style="margin-block-top: 0.35rem; font-size: 0.92rem;" id="success-reg-summary"></p>
-              </div>
-              <button type="button" class="btn btn-secondary btn-sm" id="btn-dismiss-success">
-                إخفاء الرسالة
-              </button>
-            </div>
-          </div>
-
-          <!-- Main Registration Form Card -->
-          <div class="panel-card">
-            <div class="panel-header">
-              <div>
-                <h2 class="panel-title">نموذج تسجيل مشارك جديد</h2>
-                <p class="panel-subtitle">يرجى إدخال الاسم بالعربية والإنجليزية بدقة ورفع صورة واضحة لإيصال الدفع</p>
-              </div>
-              <span class="status-pill pill-info">مصدر التسجيل: تسجيل جديد</span>
-            </div>
-
-            <form id="participant-reg-form" novalidate>
-              <!-- Arabic & English Full Names -->
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label class="form-label" for="reg-name-ar">
-                    <span>الاسم الكامل باللغة العربية <span class="required-star">*</span></span>
-                  </label>
-                  <input
-                    type="text"
-                    id="reg-name-ar"
-                    class="form-input"
-                    placeholder="مثال: محمد عبد الله السنوسي"
-                    autocomplete="off"
-                    required
-                  />
-                  <span class="form-hint">أدخل الاسم الثلاثي أو الرباعي باللغة العربية</span>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label" for="reg-name-en">
-                    <span>الاسم الكامل باللغة الإنجليزية <span class="required-star">*</span></span>
-                  </label>
-                  <input
-                    type="text"
-                    id="reg-name-en"
-                    class="form-input input-ltr"
-                    placeholder="e.g. Mohammed Abdullah Al-Senussi"
-                    autocomplete="off"
-                    required
-                  />
-                  <span class="form-hint">أدخل الاسم باللغة الإنجليزية يدوياً كما يظهر في الشهادة</span>
-                </div>
-              </div>
-
-              <!-- Participant Category (Student vs Doctor) -->
-              <div class="form-group">
-                <label class="form-label">
-                  <span>تصنيف المشارك <span class="required-star">*</span></span>
-                  <span class="form-hint">الخريجون والأطباء يُسجلون ضمن فئة الدكتور</span>
-                </label>
-
-                <div class="category-selector-grid">
-                  <div class="category-option-card is-selected" data-category="student" id="cat-card-student" role="button" tabindex="0">
-                    <div>
-                      <div class="cat-option-title">طالب (Student)</div>
-                      <div class="cat-option-desc">طلبة السنوات الدراسية (الأولى – الرابعة) وسنة الامتياز</div>
-                    </div>
-                    <div class="cat-option-fee metric-num" id="form-student-fee-display">30 د.ل</div>
-                  </div>
-
-                  <div class="category-option-card" data-category="doctor" id="cat-card-doctor" role="button" tabindex="0">
-                    <div>
-                      <div class="cat-option-title">دكتور (Doctor)</div>
-                      <div class="cat-option-desc">يشمل الأطباء الدكاترة والخريجين</div>
-                    </div>
-                    <div class="cat-option-fee metric-num" id="form-doctor-fee-display">60 د.ل</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Academic Year (Visible & Mandatory ONLY when category == 'student') -->
-              <div class="form-group" id="academic-year-section">
-                <label class="form-label">
-                  <span>السنة الدراسية <span class="required-star">*</span></span>
-                  <span class="form-hint">إلزامية عند اختيار فئة الطالب</span>
-                </label>
-
-                <div class="years-pills-grid" id="academic-years-grid">
-                  <button type="button" class="year-pill-btn" data-year="السنة الأولى">السنة الأولى</button>
-                  <button type="button" class="year-pill-btn" data-year="السنة الثانية">السنة الثانية</button>
-                  <button type="button" class="year-pill-btn" data-year="السنة الثالثة">السنة الثالثة</button>
-                  <button type="button" class="year-pill-btn" data-year="السنة الرابعة">السنة الرابعة</button>
-                  <button type="button" class="year-pill-btn" data-year="سنة الامتياز">سنة الامتياز</button>
-                </div>
-              </div>
-
-              <!-- Automatic Fee Calculation Display (Read-only for Supervisor) -->
-              <div class="fee-summary-banner">
-                <div>
-                  <span class="overline-label">قيمة رسوم التسجيل المحتسبة تلقائياً</span>
-                  <div style="font-size: 0.9rem; color: var(--text-secondary); margin-block-top: 0.15rem;" id="fee-banner-desc">
-                    فئة الطالب — محددة تلقائياً من النظام وغير قابلة للتعديل اليدوي
-                  </div>
-                </div>
-                <div class="fee-banner-amount metric-num" id="fee-banner-value">30 د.ل</div>
-              </div>
-
-              <!-- Payment Receipt Upload Section -->
-              <div class="form-group">
-                <label class="form-label">
-                  <span>إيصال الدفع <span class="required-star">*</span></span>
-                  <span class="form-hint">يدعم التصوير المباشر بالكاميرا أو رفع JPG / PNG / WEBP</span>
-                </label>
-
-                <div class="receipt-upload-zone" id="receipt-drop-zone">
-                  <!-- Hidden file inputs: one for direct camera capture, one for gallery/file picker -->
-                  <input
-                    type="file"
-                    id="receipt-camera-input"
-                    accept="image/jpeg,image/png,image/webp"
-                    capture="environment"
-                    class="is-hidden"
-                  />
-                  <input
-                    type="file"
-                    id="receipt-gallery-input"
-                    accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
-                    class="is-hidden"
-                  />
-
-                  <div id="receipt-empty-prompt">
-                    <div style="font-weight: 700; font-size: 0.96rem; color: var(--text-primary);">
-                      قم بتصوير إيصال الدفع أو اختيار صورته من الجهاز
-                    </div>
-                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-block-top: 0.25rem;">
-                      رفع صورة الإيصال إلزامي لإتمام التسجيل وحفظه في النظام
-                    </p>
-                  </div>
-
-                  <div class="receipt-buttons-row">
-                    <button type="button" class="btn btn-primary" id="btn-trigger-camera">
-                      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
-                      </svg>
-                      <span>تصوير الإيصال بالكاميرا</span>
-                    </button>
-
-                    <button type="button" class="btn btn-secondary" id="btn-trigger-gallery">
-                      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
-                      </svg>
-                      <span>اختيار صورة من المعرض</span>
-                    </button>
-                  </div>
-
-                  <!-- Image Preview Before Confirming Registration -->
-                  <div id="receipt-preview-container" class="receipt-preview-box is-hidden">
-                    <img id="receipt-preview-image" class="receipt-preview-img" alt="معاينة إيصال الدفع" />
-                    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-                      <span class="status-pill pill-success" id="receipt-file-info-badge">تم إرفاق الصورة</span>
-                      <button type="button" class="btn btn-danger btn-sm" id="btn-clear-receipt">
-                        إزالة / استبدال الصورة
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Validation Error Message Box -->
-              <div id="reg-form-error-box" class="is-hidden" style="margin-block-bottom: 1rem; padding: 0.85rem 1rem; border-radius: var(--radius-control); background: var(--status-danger-soft); border: 1px solid var(--status-danger-border); color: var(--status-danger); font-weight: 600; font-size: 0.9rem;"></div>
-
-              <!-- Submit Button -->
-              <div style="margin-block-top: 1.35rem;">
-                <button type="submit" class="btn btn-success btn-lg btn-block" id="btn-submit-registration">
-                  <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                  <span id="btn-submit-reg-text">تسجيل المشارك</span>
-                </button>
-              </div>
-            </form>
-          </div>
-
-          <!-- Supervisor's Own Registrations Drawer/Panel -->
-          <div class="panel-card is-hidden" id="sup-my-registrations-panel" style="margin-block-top: 1.5rem;">
-            <div class="panel-header">
-              <div>
-                <h3 class="panel-title">سجل المشاركين المسجلين بواسطتك</h3>
-                <p class="panel-subtitle">يعرض هذا الجدول التسجيلات التي قمت بإدخالها فقط حسب صلاحيات المشرف</p>
-              </div>
-            </div>
-            <div class="table-responsive" id="sup-my-registrations-table-wrap"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ====================================================================
-         VIEW 3: ADMIN CONTROL PANEL (8 FULL SECTIONS)
-         ==================================================================== -->
-    <section id="view-admin" class="is-hidden">
-
-      <!-- Admin Login Card (Shown when not authenticated as Admin) -->
-      <div id="admin-login-wrapper" style="max-width: 460px; margin-inline: auto; margin-block: 2.5rem;">
-        <div class="panel-card">
-          <div class="panel-header">
-            <div>
-              <h2 class="panel-title">تسجيل الدخول إلى لوحة الأدمن</h2>
-              <p class="panel-subtitle">مخصص لإدارة مؤتمر ICDS لطب الأسنان – النسخة الرابعة</p>
-            </div>
-          </div>
-
-          <form id="admin-login-form">
-            <div class="form-group">
-              <label class="form-label" for="admin-username-input">اسم المستخدم</label>
-              <input type="text" id="admin-username-input" class="form-input input-ltr" placeholder="admin" required />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="admin-password-input">كلمة المرور</label>
-              <input type="password" id="admin-password-input" class="form-input input-ltr" placeholder="••••••••" required />
-            </div>
-
-            <div id="admin-login-error" class="is-hidden" style="margin-block-bottom: 1rem; padding: 0.75rem; border-radius: var(--radius-control); background: var(--status-danger-soft); border: 1px solid var(--status-danger-border); color: var(--status-danger); font-size: 0.85rem; font-weight: 600;"></div>
-
-            <button type="submit" class="btn btn-primary btn-lg btn-block" id="btn-admin-login-submit">
-              الدخول إلى لوحة التحكم
-            </button>
-          </form>
-        </div>
+          <button type="submit" class="submit-participant-btn">
+            <span>دخول إلى لوحة الأدمن</span>
+          </button>
+        </form>
       </div>
 
-      <!-- Authenticated Admin Dashboard Workspace -->
-      <div id="admin-dashboard-workspace" class="admin-layout is-hidden">
-
-        <!-- Sidebar Navigation (8 Core Sections) -->
-        <aside class="admin-sidebar">
-          <span class="sidebar-section-label">أقسام إدارة المؤتمر</span>
-          <ul class="admin-nav-list" id="admin-nav-tabs">
-            <li>
-              <button type="button" class="admin-nav-btn is-active" data-tab="overview">
-                <span class="nav-btn-left">1. الصفحة الرئيسية</span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="admin-nav-btn" data-tab="supervisors">
-                <span class="nav-btn-left">2. إدارة المشرفين</span>
-                <span class="nav-counter-badge" id="nav-badge-supervisors">0</span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="admin-nav-btn" data-tab="days">
-                <span class="nav-btn-left">3. إدارة أيام التسجيل</span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="admin-nav-btn" data-tab="participants">
-                <span class="nav-btn-left">4. إدارة المشاركين</span>
-                <span class="nav-counter-badge" id="nav-badge-participants">0</span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="admin-nav-btn" data-tab="receipts">
-                <span class="nav-btn-left">5. إدارة الإيصالات</span>
-                <span class="nav-counter-badge is-alert" id="nav-badge-receipts">0</span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="admin-nav-btn" data-tab="finance">
-                <span class="nav-btn-left">6. التقارير المالية</span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="admin-nav-btn" data-tab="import">
-                <span class="nav-btn-left">7. استيراد البيانات السابقة</span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="admin-nav-btn" data-tab="settings">
-                <span class="nav-btn-left">8. إعدادات الموقع</span>
-              </button>
-            </li>
-          </ul>
-
-          <div style="margin-block-top: 1.25rem; padding-block-top: 1rem; border-block-top: 1px solid var(--border-subtle);">
-            <div style="font-size: 0.78rem; color: var(--text-muted); margin-block-bottom: 0.6rem; padding-inline: 0.5rem;">
-              متصل كـ: <strong class="text-secondary" id="admin-active-name">مدير النظام</strong>
-            </div>
-            <button type="button" class="btn btn-danger btn-sm btn-block" id="btn-admin-logout">
-              تسجيل الخروج
-            </button>
+      <!-- Admin Panel Workspace (5 Essential Sections Only) -->
+      <div id="admin-panel-workspace" class="admin-card hidden">
+        <div class="admin-header-bar">
+          <div>
+            <h2 class="admin-main-title">لوحة تحكم الأدمن – مؤتمر ICDS (النسخة الرابعة)</h2>
           </div>
-        </aside>
-
-        <!-- Admin Tab Views Container -->
-        <div class="admin-content-area">
-
-          <!-- TAB 1: ADMIN OVERVIEW -->
-          <div class="admin-tab-pane" id="admin-tab-overview">
-            <div class="panel-card">
-              <div class="panel-header">
-                <div>
-                  <h2 class="panel-title">لوحة الإحصائيات العامة للمؤتمر</h2>
-                  <p class="panel-subtitle">جميع الأرقام محسوبة مباشرة من قاعدة البيانات وتبدأ من الصفر</p>
-                </div>
-                <button type="button" class="btn btn-secondary btn-sm" id="btn-refresh-dashboard">
-                  تحديث البيانات الآن
-                </button>
-              </div>
-
-              <div class="kpi-metrics-grid" id="admin-overview-kpis"></div>
-            </div>
-
-            <div class="form-grid-2">
-              <!-- Registrations per Day -->
-              <div class="panel-card">
-                <div class="panel-header">
-                  <div>
-                    <h3 class="panel-title">إجمالي التسجيلات لكل يوم</h3>
-                    <p class="panel-subtitle">توزيع التسجيلات والمبالغ على أيام الأسبوع</p>
-                  </div>
-                </div>
-                <div class="table-responsive" id="overview-days-table"></div>
-              </div>
-
-              <!-- Registrations per Supervisor -->
-              <div class="panel-card">
-                <div class="panel-header">
-                  <div>
-                    <h3 class="panel-title">إجمالي التسجيلات لكل مشرف</h3>
-                    <p class="panel-subtitle">أداء المشرفين وإجمالي المبالغ المسجلة</p>
-                  </div>
-                </div>
-                <div class="table-responsive" id="overview-supervisors-table"></div>
-              </div>
-            </div>
-
-            <!-- Recent Registrations -->
-            <div class="panel-card">
-              <div class="panel-header">
-                <div>
-                  <h3 class="panel-title">أحدث التسجيلات المسجلة في النظام</h3>
-                  <p class="panel-subtitle">آخر المشاركين الذين تم تسجيلهم</p>
-                </div>
-                <button type="button" class="btn btn-ghost btn-sm" id="btn-overview-see-all-participants">
-                  عرض جميع المشاركين
-                </button>
-              </div>
-              <div class="table-responsive" id="overview-recent-table"></div>
-            </div>
-          </div>
-
-          <!-- TAB 2: SUPERVISORS MANAGEMENT -->
-          <div class="admin-tab-pane is-hidden" id="admin-tab-supervisors">
-            <div class="panel-card">
-              <div class="panel-header">
-                <div>
-                  <h2 class="panel-title">إدارة المشرفين</h2>
-                  <p class="panel-subtitle">إضافة المشرفين، تعديل أسمائهم، تعطيلهم مؤقتاً عند الغياب، أو حذفهم دون المساس بالتسجيلات السابقة</p>
-                </div>
-                <button type="button" class="btn btn-primary" id="btn-open-add-supervisor">
-                  + إضافة مشرف جديد
-                </button>
-              </div>
-
-              <div class="table-responsive" id="admin-supervisors-table-wrap"></div>
-            </div>
-          </div>
-
-          <!-- TAB 3: REGISTRATION DAYS & 2-SUPERVISOR DISTRIBUTION -->
-          <div class="admin-tab-pane is-hidden" id="admin-tab-days">
-            <div class="panel-card">
-              <div class="panel-header">
-                <div>
-                  <h2 class="panel-title">إدارة أيام التسجيل وتوزيع المشرفين</h2>
-                  <p class="panel-subtitle">كل يوم يحتوي على مشرفين اثنين بالضبط (المشرف الأول والمشرف الثاني). أي تعديل يظهر فوراً في بوابة التسجيل دون تغيير التسجيلات السابقة.</p>
-                </div>
-                <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
-                  <button type="button" class="btn btn-secondary btn-sm" id="btn-open-add-day">
-                    + إضافة يوم إضافي
-                  </button>
-                  <button type="button" class="btn btn-success" id="btn-save-all-day-assignments">
-                    حفظ توزيع جميع الأيام
-                  </button>
-                </div>
-              </div>
-
-              <div class="table-responsive" id="admin-days-distribution-wrap"></div>
-            </div>
-          </div>
-
-          <!-- TAB 4: PARTICIPANTS MANAGEMENT -->
-          <div class="admin-tab-pane is-hidden" id="admin-tab-participants">
-            <div class="panel-card">
-              <div class="panel-header">
-                <div>
-                  <h2 class="panel-title">سجل وإدارة المشاركين</h2>
-                  <p class="panel-subtitle">بحث شامل، تصفية متقدمة، مراجعة الإيصالات، وتعديل أو حذف البيانات</p>
-                </div>
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                  <button type="button" class="btn btn-secondary btn-sm" id="btn-export-xlsx">
-                    تصدير Excel (XLSX)
-                  </button>
-                  <button type="button" class="btn btn-secondary btn-sm" id="btn-export-csv">
-                    تصدير CSV
-                  </button>
-                </div>
-              </div>
-
-              <!-- Search & Filters Toolbar -->
-              <div class="filter-toolbar">
-                <div>
-                  <label class="form-label" for="filter-search">بحث (عربي / إنجليزي / رقم التسجيل)</label>
-                  <input type="text" id="filter-search" class="form-input" placeholder="ابحث بالاسم أو رقم التسجيل..." />
-                </div>
-
-                <div>
-                  <label class="form-label" for="filter-day">يوم التسجيل</label>
-                  <select id="filter-day" class="form-select">
-                    <option value="">جميع الأيام</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="form-label" for="filter-supervisor">اسم المشرف</label>
-                  <select id="filter-supervisor" class="form-select">
-                    <option value="">جميع المشرفين</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="form-label" for="filter-category">فئة المشارك</label>
-                  <select id="filter-category" class="form-select">
-                    <option value="">جميع الفئات</option>
-                    <option value="student">طالب</option>
-                    <option value="doctor">دكتور</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="form-label" for="filter-year">السنة الدراسية</label>
-                  <select id="filter-year" class="form-select">
-                    <option value="">جميع السنوات</option>
-                    <option value="السنة الأولى">السنة الأولى</option>
-                    <option value="السنة الثانية">السنة الثانية</option>
-                    <option value="السنة الثالثة">السنة الثالثة</option>
-                    <option value="السنة الرابعة">السنة الرابعة</option>
-                    <option value="سنة الامتياز">سنة الامتياز</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="form-label" for="filter-payment">حالة التحصيل</label>
-                  <select id="filter-payment" class="form-select">
-                    <option value="">جميع الحالات</option>
-                    <option value="pending">قيد المراجعة</option>
-                    <option value="confirmed">مؤكد التحصيل</option>
-                    <option value="flagged">مرفوض / ملاحظة</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="form-label" for="filter-source">مصدر التسجيل</label>
-                  <select id="filter-source" class="form-select">
-                    <option value="">الكل</option>
-                    <option value="تسجيل جديد">تسجيل جديد</option>
-                    <option value="استيراد سابق">استيراد سابق</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="form-label" for="filter-sort">الترتيب</label>
-                  <select id="filter-sort" class="form-select">
-                    <option value="newest">من الأحدث إلى الأقدم</option>
-                    <option value="oldest">من الأقدم إلى الأحدث</option>
-                    <option value="name_ar">أبجدياً (الاسم العربي)</option>
-                    <option value="amount_desc">حسب المبلغ</option>
-                  </select>
-                </div>
-              </div>
-
-              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-block-bottom: 0.85rem;">
-                <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.86rem;">
-                  <span>عدد النتائج: <strong class="metric-num" id="participants-filtered-count">0</strong></span>
-                  <span>إجمالي المبالغ المعروضة: <strong class="metric-num text-accent" id="participants-filtered-amount">0 د.ل</strong></span>
-                </div>
-                <div style="display: flex; gap: 0.5rem;">
-                  <label style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.84rem; cursor: pointer;">
-                    <input type="checkbox" id="filter-duplicates-only" />
-                    <span>عرض التسجيلات المنبهة بالتكرار فقط</span>
-                  </label>
-                  <button type="button" class="btn btn-ghost btn-sm" id="btn-reset-filters">
-                    إعادة ضبط الفلاتر
-                  </button>
-                </div>
-              </div>
-
-              <div class="table-responsive" id="admin-participants-table-wrap"></div>
-            </div>
-          </div>
-
-          <!-- TAB 5: RECEIPTS VERIFICATION CENTER -->
-          <div class="admin-tab-pane is-hidden" id="admin-tab-receipts">
-            <div class="panel-card">
-              <div class="panel-header">
-                <div>
-                  <h2 class="panel-title">مركز مراجعة إيصالات الدفع وتأكيد التحصيل</h2>
-                  <p class="panel-subtitle">مراجعة صور الإيصالات المرفوعة واعتماد تحصيل المبالغ المالية</p>
-                </div>
-                <div style="display: flex; gap: 0.5rem;">
-                  <button type="button" class="btn btn-secondary btn-sm receipt-filter-btn is-active" data-status="">الكل</button>
-                  <button type="button" class="btn btn-warning btn-sm receipt-filter-btn" data-status="pending">قيد المراجعة</button>
-                  <button type="button" class="btn btn-success btn-sm receipt-filter-btn" data-status="confirmed">مؤكد التحصيل</button>
-                  <button type="button" class="btn btn-danger btn-sm receipt-filter-btn" data-status="flagged">ملاحظة / مرفوض</button>
-                </div>
-              </div>
-
-              <div class="table-responsive" id="admin-receipts-table-wrap"></div>
-            </div>
-          </div>
-
-          <!-- TAB 6: FINANCIAL REPORTS -->
-          <div class="admin-tab-pane is-hidden" id="admin-tab-finance">
-            <div class="panel-card">
-              <div class="panel-header">
-                <div>
-                  <h2 class="panel-title">التقارير المالية التفصيلية</h2>
-                  <p class="panel-subtitle">تفريق دقيق بين المبالغ المسجلة والمبالغ المؤكد تحصيلها فعلياً بعد مراجعة الإيصالات</p>
-                </div>
-                <button type="button" class="btn btn-secondary btn-sm" id="btn-refresh-finance">
-                  تحديث التقرير المالي
-                </button>
-              </div>
-
-              <div class="kpi-metrics-grid" id="finance-summary-kpis"></div>
-            </div>
-
-            <div class="form-grid-2">
-              <div class="panel-card">
-                <div class="panel-header">
-                  <div>
-                    <h3 class="panel-title">التقرير المالي حسب المشرف</h3>
-                    <p class="panel-subtitle">إجمالي التسجيلات والمبالغ المسجلة والمؤكدة لكل مشرف</p>
-                  </div>
-                </div>
-                <div class="table-responsive" id="finance-by-supervisor-table"></div>
-              </div>
-
-              <div class="panel-card">
-                <div class="panel-header">
-                  <div>
-                    <h3 class="panel-title">التقرير المالي حسب يوم التسجيل</h3>
-                    <p class="panel-subtitle">إجمالي التسجيلات والمبالغ المسجلة والمؤكدة لكل يوم</p>
-                  </div>
-                </div>
-                <div class="table-responsive" id="finance-by-day-table"></div>
-              </div>
-            </div>
-
-            <div class="form-grid-2">
-              <div class="panel-card">
-                <div class="panel-header">
-                  <div>
-                    <h3 class="panel-title">التفصيل المالي حسب الفئة والسنة الدراسية</h3>
-                  </div>
-                </div>
-                <div class="table-responsive" id="finance-by-year-table"></div>
-              </div>
-
-              <div class="panel-card">
-                <div class="panel-header">
-                  <div>
-                    <h3 class="panel-title">التفصيل حسب مصدر التسجيل</h3>
-                    <p class="panel-subtitle">التمييز بين التسجيلات الجديدة والتسجيلات المستوردة</p>
-                  </div>
-                </div>
-                <div class="table-responsive" id="finance-by-source-table"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- TAB 7: FUTURE DATA IMPORT SYSTEM (EXCEL XLSX / CSV) -->
-          <div class="admin-tab-pane is-hidden" id="admin-tab-import">
-            <div class="panel-card">
-              <div class="panel-header">
-                <div>
-                  <h2 class="panel-title">نظام استيراد البيانات السابقة (Excel XLSX / CSV)</h2>
-                  <p class="panel-subtitle">
-                    مجهز لاستيراد ملف التسجيلات السابقة مستقبلاً إلى قاعدة البيانات الرئيسية مع الاحتفاظ بالمبالغ المالية السابقة دون إعادة احتسابها ومع تمييزها كمصدر "استيراد سابق"
-                  </p>
-                </div>
-              </div>
-
-              <!-- Upload File Step -->
-              <div class="receipt-upload-zone" id="import-file-dropzone">
-                <input type="file" id="import-file-input" accept=".xlsx,.xls,.csv" class="is-hidden" />
-                <div style="font-weight: 700; font-size: 1rem; color: var(--text-primary);">
-                  اختر ملف البيانات السابقة بصيغة Excel (.xlsx) أو (.csv) لمعاينته قبل الاستيراد
-                </div>
-                <p style="font-size: 0.82rem; color: var(--text-muted); margin-block-top: 0.3rem;">
-                  سيقوم النظام بعرض معاينة شاملة، تحديد الأعمدة، فحص النواقص والتكرارات، ولن يتم الحفظ إلا بعد تأكيدك النهائي
-                </p>
-                <div class="receipt-buttons-row">
-                  <button type="button" class="btn btn-primary" id="btn-choose-import-file">
-                    اختيار ملف Excel أو CSV للمعاينة
-                  </button>
-                </div>
-              </div>
-
-              <!-- Import Preview & Column Mapping Workspace (Hidden until file is selected) -->
-              <div id="import-preview-workspace" class="is-hidden" style="margin-block-top: 1.5rem;">
-                <div class="panel-header">
-                  <div>
-                    <h3 class="panel-title">معاينة الملف وضبط ربط الأعمدة: <span id="import-filename-label" class="text-accent"></span></h3>
-                    <p class="panel-subtitle">يمكنك مراجعة ربط الأعمدة بالحقول المناسبة في قاعدة البيانات قبل تأكيد الاستيراد</p>
-                  </div>
-                  <button type="button" class="btn btn-ghost btn-sm" id="btn-cancel-import-preview">
-                    إلغاء الملف
-                  </button>
-                </div>
-
-                <!-- Column Mapping Grid -->
-                <div class="filter-toolbar" id="import-column-mapping-grid"></div>
-
-                <div style="margin-block-bottom: 1rem; display: flex; justify-content: flex-end;">
-                  <button type="button" class="btn btn-secondary btn-sm" id="btn-reanalyze-mapping">
-                    تحديث المعاينة حسب ربط الأعمدة
-                  </button>
-                </div>
-
-                <!-- Import Summary Metrics -->
-                <div class="kpi-metrics-grid" id="import-summary-metrics" style="margin-block-bottom: 1.25rem;"></div>
-
-                <!-- Preview Table -->
-                <div class="table-responsive" id="import-preview-table-wrap" style="max-height: 440px; overflow-y: auto;"></div>
-
-                <!-- Confirm Import Action Bar -->
-                <div style="margin-block-top: 1.25rem; padding: 1rem 1.25rem; background: var(--surface-subtle); border: 1px solid var(--border-strong); border-radius: var(--radius-card); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-                  <div>
-                    <div style="font-weight: 700;">تأكيد عملية الاستيراد إلى قاعدة البيانات الرئيسية</div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);">
-                      سيتم حفظ المبالغ المالية السابقة كما وردت في الملف دون إعادة احتسابها، مع تمييز السجلات بـ "استيراد سابق".
-                    </div>
-                  </div>
-                  <button type="button" class="btn btn-success btn-lg" id="btn-commit-import">
-                    تأكيد واستيراد التسجيلات المحددة (<span class="metric-num" id="import-selected-count-btn">0</span>)
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Previous Import Batches History -->
-            <div class="panel-card">
-              <div class="panel-header">
-                <div>
-                  <h3 class="panel-title">سجل عمليات الاستيراد السابقة</h3>
-                  <p class="panel-subtitle">جميع الدفعات التي تم استيرادها إلى النظام</p>
-                </div>
-              </div>
-              <div class="table-responsive" id="import-history-table-wrap"></div>
-            </div>
-          </div>
-
-          <!-- TAB 8: SITE SETTINGS & AUDIT LOGS -->
-          <div class="admin-tab-pane is-hidden" id="admin-tab-settings">
-            <div class="form-grid-2">
-              <!-- Conference & Fees Settings -->
-              <div class="panel-card">
-                <div class="panel-header">
-                  <div>
-                    <h2 class="panel-title">إعدادات المؤتمر ورسوم التسجيل</h2>
-                    <p class="panel-subtitle">تعديل الرسوم يؤثر على التسجيلات الجديدة فقط ولا يغير المبالغ السابقة</p>
-                  </div>
-                </div>
-
-                <form id="admin-settings-form">
-                  <div class="form-group">
-                    <label class="form-label" for="set-conf-title">اسم المؤتمر</label>
-                    <input type="text" id="set-conf-title" class="form-input" required />
-                  </div>
-
-                  <div class="form-grid-2">
-                    <div class="form-group">
-                      <label class="form-label" for="set-conf-edition">نسخة المؤتمر</label>
-                      <input type="text" id="set-conf-edition" class="form-input" required />
-                    </div>
-                    <div class="form-group">
-                      <label class="form-label" for="set-reg-prefix">بادئة أرقام التسجيل</label>
-                      <input type="text" id="set-reg-prefix" class="form-input input-ltr" required />
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label" for="set-conf-subtitle">العنوان الفرعي للبوابة</label>
-                    <input type="text" id="set-conf-subtitle" class="form-input" />
-                  </div>
-
-                  <div class="form-grid-2">
-                    <div class="form-group">
-                      <label class="form-label" for="set-student-fee">رسوم فئة الطالب (د.ل)</label>
-                      <input type="number" step="0.5" min="0" id="set-student-fee" class="form-input input-ltr" required />
-                    </div>
-                    <div class="form-group">
-                      <label class="form-label" for="set-doctor-fee">رسوم فئة الدكتور (د.ل)</label>
-                      <input type="number" step="0.5" min="0" id="set-doctor-fee" class="form-input input-ltr" required />
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label" for="set-portal-code">رمز حماية بوابة المشرفين العام (اختياري)</label>
-                    <input type="text" id="set-portal-code" class="form-input input-ltr" placeholder="اتركه فارغاً لعدم طلب رمز بوابة عام" />
-                  </div>
-
-                  <div class="form-group" style="display: flex; flex-direction: column; gap: 0.6rem;">
-                    <label style="display: flex; align-items: center; gap: 0.55rem; cursor: pointer;">
-                      <input type="checkbox" id="set-reg-open" />
-                      <span>فتح باب تسجيل المشاركين للمشرفين</span>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 0.55rem; cursor: pointer;">
-                      <input type="checkbox" id="set-require-pin" />
-                      <span>طلب الرمز السري الشخصي للمشرف عند اختيار اسمه</span>
-                    </label>
-                  </div>
-
-                  <button type="submit" class="btn btn-primary btn-block">
-                    حفظ إعدادات المؤتمر والرسوم
-                  </button>
-                </form>
-              </div>
-
-              <!-- Admin Credentials Security -->
-              <div class="panel-card">
-                <div class="panel-header">
-                  <div>
-                    <h2 class="panel-title">حماية حساب الأدمن</h2>
-                    <p class="panel-subtitle">تحديث اسم المستخدم وكلمة المرور الخاصة بلوحة التحكم</p>
-                  </div>
-                </div>
-
-                <form id="admin-credentials-form">
-                  <div class="form-group">
-                    <label class="form-label" for="cred-display-name">الاسم الظاهر للأدمن</label>
-                    <input type="text" id="cred-display-name" class="form-input" required />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label" for="cred-username">اسم المستخدم للدخول</label>
-                    <input type="text" id="cred-username" class="form-input input-ltr" required />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label" for="cred-current-password">كلمة المرور الحالية <span class="required-star">*</span></label>
-                    <input type="password" id="cred-current-password" class="form-input input-ltr" required />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label" for="cred-new-password">كلمة المرور الجديدة (اختياري)</label>
-                    <input type="password" id="cred-new-password" class="form-input input-ltr" placeholder="اتركها فارغة إذا لم ترغب في تغييرها" />
-                  </div>
-
-                  <button type="submit" class="btn btn-secondary btn-block">
-                    تحديث بيانات دخول الأدمن
-                  </button>
-                </form>
-              </div>
-            </div>
-
-            <!-- Audit Logs Table -->
-            <div class="panel-card">
-              <div class="panel-header">
-                <div>
-                  <h3 class="panel-title">سجل العمليات الإدارية والأمنية (Audit Logs)</h3>
-                  <p class="panel-subtitle">توثيق زمني لجميع عمليات التسجيل والتعديلات الإدارية بتوقيت ليبيا</p>
-                </div>
-              </div>
-              <div class="table-responsive" id="admin-audit-logs-wrap"></div>
-            </div>
-          </div>
-
+          <button type="button" class="admin-logout-btn" id="admin-logout-btn">تسجيل الخروج</button>
         </div>
+
+        <!-- 5 Essential Admin Tabs -->
+        <div class="admin-tabs-bar" role="tablist">
+          <button type="button" class="admin-tab-btn active" data-admin-tab="supervisors">إدارة المشرفين</button>
+          <button type="button" class="admin-tab-btn" data-admin-tab="registrations">إدارة التسجيلات</button>
+          <button type="button" class="admin-tab-btn" data-admin-tab="receipts">الإيصالات</button>
+          <button type="button" class="admin-tab-btn" data-admin-tab="reports">التقارير</button>
+          <button type="button" class="admin-tab-btn" data-admin-tab="import">استيراد البيانات</button>
+        </div>
+
+        <div class="reg-divider"></div>
+
+        <!-- TAB 1: إدارة المشرفين -->
+        <div id="admin-tab-supervisors" class="admin-tab-pane active">
+          <div class="admin-section-grid">
+            <!-- Add Supervisor -->
+            <div class="admin-subbox">
+              <h3 class="subbox-title">إضافة مشرف جديد</h3>
+              <form id="add-supervisor-form" class="inline-add-form">
+                <input type="text" id="new-sup-name" class="form-input plain-input" placeholder="اسم المشرف الكامل" required />
+                <button type="submit" class="teal-action-btn">إضافة مشرف</button>
+              </form>
+
+              <div class="supervisors-list-wrap">
+                <table class="clean-table">
+                  <thead>
+                    <tr>
+                      <th>اسم المشرف</th>
+                      <th>الحالة</th>
+                      <th>التسجيلات</th>
+                      <th>إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-supervisors-tbody">
+                    <tr><td colspan="4" class="empty-cell">لا يوجد مشرفون مضافون حالياً.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Assign 2 Supervisors Per Day -->
+            <div class="admin-subbox">
+              <h3 class="subbox-title">توزيع المشرفين على أيام التسجيل (مشرفان لكل يوم)</h3>
+              <div id="admin-days-assignment-list" class="days-assignment-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: إدارة التسجيلات -->
+        <div id="admin-tab-registrations" class="admin-tab-pane hidden">
+          <div class="filters-bar">
+            <input type="text" id="filter-search" class="form-input plain-input" placeholder="بحث بالاسم العربي أو الإنجليزي أو رقم التسجيل..." />
+            <select id="filter-day" class="form-select">
+              <option value="">كل الأيام</option>
+            </select>
+            <select id="filter-supervisor" class="form-select">
+              <option value="">كل المشرفين</option>
+            </select>
+            <select id="filter-category" class="form-select">
+              <option value="">كل الفئات</option>
+              <option value="student">طالب</option>
+              <option value="doctor">دكتور</option>
+            </select>
+            <select id="filter-year" class="form-select">
+              <option value="">كل السنوات الدراسية</option>
+              <option value="السنة الأولى">السنة الأولى</option>
+              <option value="السنة الثانية">السنة الثانية</option>
+              <option value="السنة الثالثة">السنة الثالثة</option>
+              <option value="السنة الرابعة">السنة الرابعة</option>
+              <option value="الامتياز">الامتياز</option>
+            </select>
+            <button type="button" class="teal-action-btn outline" id="export-excel-btn">تصدير Excel</button>
+          </div>
+
+          <div class="table-scroll">
+            <table class="clean-table">
+              <thead>
+                <tr>
+                  <th>رقم التسجيل</th>
+                  <th>الاسم بالعربي</th>
+                  <th>الاسم بالإنجليزي</th>
+                  <th>نوع المشارك</th>
+                  <th>السنة الدراسية</th>
+                  <th>الرسوم</th>
+                  <th>اليوم</th>
+                  <th>المشرف</th>
+                  <th>التاريخ والوقت</th>
+                  <th>الإيصال</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="admin-registrations-tbody">
+                <tr><td colspan="11" class="empty-cell">لا توجد تسجيلات حالياً.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 3: الإيصالات -->
+        <div id="admin-tab-receipts" class="admin-tab-pane hidden">
+          <div id="admin-receipts-grid" class="receipts-grid">
+            <div class="empty-cell">لا توجد إيصالات مرفوعة حالياً.</div>
+          </div>
+        </div>
+
+        <!-- TAB 4: التقارير -->
+        <div id="admin-tab-reports" class="admin-tab-pane hidden">
+          <div class="reports-summary-bar" id="reports-summary-bar">
+            <div class="report-pill"><span>إجمالي المسجلين:</span> <strong id="rep-total-reg">0</strong></div>
+            <div class="report-pill"><span>الطلبة:</span> <strong id="rep-total-stu">0</strong></div>
+            <div class="report-pill"><span>الدكاترة:</span> <strong id="rep-total-doc">0</strong></div>
+            <div class="report-pill"><span>إجمالي الرسوم:</span> <strong id="rep-total-amount">0 د.ل</strong></div>
+          </div>
+
+          <div class="admin-section-grid">
+            <div class="admin-subbox">
+              <h3 class="subbox-title">تقرير التسجيلات حسب الأيام</h3>
+              <table class="clean-table">
+                <thead>
+                  <tr>
+                    <th>اليوم</th>
+                    <th>عدد المسجلين</th>
+                    <th>طلبة</th>
+                    <th>دكاترة</th>
+                    <th>إجمالي المبلغ</th>
+                  </tr>
+                </thead>
+                <tbody id="report-by-day-tbody">
+                  <tr><td colspan="5" class="empty-cell">لا توجد بيانات.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="admin-subbox">
+              <h3 class="subbox-title">تقرير التسجيلات حسب المشرفين</h3>
+              <table class="clean-table">
+                <thead>
+                  <tr>
+                    <th>المشرف</th>
+                    <th>عدد المسجلين</th>
+                    <th>طلبة</th>
+                    <th>دكاترة</th>
+                    <th>إجمالي المبلغ</th>
+                  </tr>
+                </thead>
+                <tbody id="report-by-sup-tbody">
+                  <tr><td colspan="5" class="empty-cell">لا توجد بيانات.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 5: استيراد البيانات -->
+        <div id="admin-tab-import" class="admin-tab-pane hidden">
+          <div class="admin-subbox">
+            <h3 class="subbox-title">استيراد بيانات سابقة (Excel XLSX / CSV)</h3>
+            <p class="import-note">ارفع ملف البيانات السابقة لمعاينتها والتحقق من التكرار قبل حفظها في قاعدة البيانات.</p>
+            <div class="import-controls">
+              <input type="file" id="import-file-input" accept=".xlsx,.xls,.csv" class="sr-only-file" />
+              <button type="button" class="receipt-upload-btn" id="import-choose-btn">اختيار ملف Excel أو CSV</button>
+              <button type="button" class="teal-action-btn hidden" id="import-confirm-btn">تأكيد استيراد البيانات</button>
+            </div>
+            <div id="import-preview-area" class="import-preview-area hidden"></div>
+          </div>
+        </div>
+
       </div>
     </section>
 
   </main>
 
-  <!-- ======================================================================
-       MODALS (DUPLICATE WARNING, PARTICIPANT DETAILS/EDIT, SUPERVISOR EDIT, RECEIPT LIGHTBOX)
-       ====================================================================== -->
-
-  <!-- 1. Duplicate Warning Modal for Supervisors -->
-  <div id="modal-duplicate-warning" class="modal-backdrop is-hidden">
-    <div class="modal-dialog">
+  <!-- ================= RECEIPT LIGHTBOX MODAL ================= -->
+  <div id="lightbox-modal" class="modal-backdrop hidden">
+    <div class="modal-box">
       <div class="modal-header">
-        <h3 class="modal-title text-warning">تنبيه: احتمال وجود تسجيل مكرر</h3>
-        <button type="button" class="btn btn-ghost btn-sm" id="btn-close-dup-modal">✕</button>
+        <h3 id="lightbox-title">معاينة إيصال الدفع</h3>
+        <button type="button" id="lightbox-close-btn" class="modal-close-btn">&times;</button>
       </div>
       <div class="modal-body">
-        <p style="margin-block-bottom: 1rem; font-size: 0.92rem;">
-          اكتشف النظام وجود تسجيل سابق مشابه لبيانات المشارك الذي تحاول تسجيله حالياً. يرجى مراجعة السجلات المشابهة أدناه للتأكد:
-        </p>
-        <div class="table-responsive" id="dup-modal-matches-table"></div>
-        <p style="margin-block-top: 1rem; font-size: 0.85rem; color: var(--text-muted);">
-          إذا كان هذا المشارك شخصاً آخر أو تسجيلاً جديداً صحيحاً، يمكنك الضغط على "تأكيد التسجيل رغم التنبيه" وسيتم حفظه مع إشعار الأدمن للمراجعة.
-        </p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" id="btn-cancel-dup-submit">
-          إلغاء ومراجعة البيانات
-        </button>
-        <button type="button" class="btn btn-warning" id="btn-confirm-dup-submit">
-          تأكيد التسجيل رغم التنبيه
-        </button>
+        <img id="lightbox-img" src="" alt="إيصال الدفع" class="lightbox-full-img" />
       </div>
     </div>
   </div>
 
-  <!-- 2. Participant Full Details & Admin Edit Modal -->
-  <div id="modal-participant-details" class="modal-backdrop is-hidden">
-    <div class="modal-dialog modal-lg">
+  <!-- ================= EDIT PARTICIPANT MODAL ================= -->
+  <div id="edit-participant-modal" class="modal-backdrop hidden">
+    <div class="modal-box">
       <div class="modal-header">
-        <div>
-          <h3 class="modal-title">تفاصيل المشارك: <span id="detail-modal-reg-num" class="metric-num text-accent"></span></h3>
+        <h3>تعديل بيانات المشارك</h3>
+        <button type="button" id="edit-modal-close-btn" class="modal-close-btn">&times;</button>
+      </div>
+      <form id="edit-participant-form" class="reg-form">
+        <input type="hidden" id="edit-p-id" />
+        <div class="form-block">
+          <label class="field-label">الاسم بالعربي</label>
+          <input type="text" id="edit-p-name-ar" class="form-input plain-input" required />
         </div>
-        <button type="button" class="btn btn-ghost btn-sm" id="btn-close-participant-modal">✕</button>
-      </div>
-      <div class="modal-body" id="participant-modal-body"></div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" id="btn-delete-participant-modal">
-          حذف هذا التسجيل نهائياً
-        </button>
-        <div style="flex: 1;"></div>
-        <button type="button" class="btn btn-secondary" id="btn-cancel-participant-modal">
-          إغلاق
-        </button>
-        <button type="button" class="btn btn-primary" id="btn-save-participant-modal">
-          حفظ التعديلات
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 3. Add / Edit Supervisor Modal -->
-  <div id="modal-supervisor-form" class="modal-backdrop is-hidden">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h3 class="modal-title" id="sup-modal-title">إضافة مشرف جديد</h3>
-        <button type="button" class="btn btn-ghost btn-sm" id="btn-close-sup-modal">✕</button>
-      </div>
-      <form id="supervisor-modal-form">
-        <div class="modal-body">
-          <input type="hidden" id="sup-form-id" />
-          <div class="form-group">
-            <label class="form-label" for="sup-form-name">اسم المشرف الكامل <span class="required-star">*</span></label>
-            <input type="text" id="sup-form-name" class="form-input" placeholder="أدخل اسم المشرف" required />
+        <div class="form-block">
+          <label class="field-label">الاسم بالانجليزي</label>
+          <input type="text" id="edit-p-name-en" class="form-input plain-input" required />
+        </div>
+        <div class="form-grid-two">
+          <div class="form-block">
+            <label class="field-label">نوع المشارك</label>
+            <select id="edit-p-category" class="form-select">
+              <option value="student">طالب</option>
+              <option value="doctor">دكتور</option>
+            </select>
           </div>
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label" for="sup-form-phone">رقم الهاتف (اختياري)</label>
-              <input type="text" id="sup-form-phone" class="form-input input-ltr" placeholder="09XXXXXXXX" />
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="sup-form-pin">رمز سري خاص بالمشرف (اختياري)</label>
-              <input type="text" id="sup-form-pin" class="form-input input-ltr" placeholder="مثال: 1234" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="sup-form-notes">ملاحظات إدارية (اختياري)</label>
-            <input type="text" id="sup-form-notes" class="form-input" placeholder="أي ملاحظات حول فترة المشرف" />
-          </div>
-          <div class="form-group">
-            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-              <input type="checkbox" id="sup-form-active" checked />
-              <span>المشرف نشط ومتاح للتسجيل</span>
-            </label>
+          <div class="form-block" id="edit-p-year-wrap">
+            <label class="field-label">السنة الدراسية</label>
+            <select id="edit-p-year" class="form-select">
+              <option value="">اختر السنة الدراسية</option>
+              <option value="السنة الأولى">السنة الأولى</option>
+              <option value="السنة الثانية">السنة الثانية</option>
+              <option value="السنة الثالثة">السنة الثالثة</option>
+              <option value="السنة الرابعة">السنة الرابعة</option>
+              <option value="الامتياز">الامتياز</option>
+            </select>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" id="btn-cancel-sup-modal">إلغاء</button>
-          <button type="submit" class="btn btn-primary">حفظ بيانات المشرف</button>
-        </div>
+        <button type="submit" class="submit-participant-btn">حفظ التعديلات</button>
       </form>
     </div>
   </div>
-
-  <!-- 4. Receipt Full Image Viewer Modal -->
-  <div id="modal-receipt-viewer" class="modal-backdrop is-hidden">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-header">
-        <h3 class="modal-title" id="receipt-viewer-title">معاينة إيصال الدفع</h3>
-        <button type="button" class="btn btn-ghost btn-sm" id="btn-close-receipt-viewer">✕</button>
-      </div>
-      <div class="modal-body" style="text-align: center; background: #05070B;">
-        <img id="receipt-viewer-img" src="" alt="صورة إيصال الدفع" style="max-width: 100%; max-height: 70vh; border-radius: 8px; object-fit: contain;" />
-        <div id="receipt-viewer-meta" style="margin-block-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;"></div>
-      </div>
-      <div class="modal-footer" id="receipt-viewer-actions"></div>
-    </div>
-  </div>
-
-  <!-- Toast Notification Container -->
-  <div class="toast-container" id="toast-container"></div>
 
   <script src="app.js"></script>
 </body>
