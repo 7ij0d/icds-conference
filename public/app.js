@@ -15,6 +15,7 @@
   // Application State
   const state = {
     currentView: 'register',
+    supervisorUnlocked: sessionStorage.getItem('icds_supervisor_unlocked') === '1',
     days: [],
     shifts: [
       {
@@ -90,6 +91,12 @@
     viewHome: document.getElementById('view-home'),
     viewAdmin: document.getElementById('view-admin'),
 
+    supervisorGateCard: document.getElementById('supervisor-gate-card'),
+    supervisorGateForm: document.getElementById('supervisor-gate-form'),
+    supervisorAccessCodeInput: document.getElementById('supervisor-access-code'),
+    supervisorGateError: document.getElementById('supervisor-gate-error'),
+    regFormCard: document.getElementById('reg-form-card'),
+
     dayButtonsContainer: document.getElementById('day-buttons-container'),
     shiftButtonsContainer: document.getElementById('shift-buttons-container'),
     shiftBtn1: document.getElementById('shift-btn-1'),
@@ -163,8 +170,15 @@
     if (viewName === 'admin') {
       initAdminView();
     } else if (viewName === 'register') {
+      updateSupervisorGateUI();
       loadPublicOverview();
     }
+  }
+
+  function updateSupervisorGateUI() {
+    if (!els.supervisorGateCard || !els.regFormCard) return;
+    els.supervisorGateCard.classList.toggle('hidden', state.supervisorUnlocked);
+    els.regFormCard.classList.toggle('hidden', !state.supervisorUnlocked);
   }
 
   // ==========================================================================
@@ -1085,23 +1099,65 @@
       if (e.target === els.lightboxModal) els.lightboxModal.classList.add('hidden');
     });
 
-    // Admin Login
+    // Supervisor Unified Code Gate (00icds4 - case insensitive, no username)
+    if (els.supervisorGateForm) {
+      els.supervisorGateForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (els.supervisorGateError) els.supervisorGateError.classList.add('hidden');
+
+        const enteredCode = (els.supervisorAccessCodeInput?.value || '').trim();
+        if (!enteredCode) {
+          if (els.supervisorGateError) {
+            els.supervisorGateError.textContent = 'يرجى إدخال رمز الدخول.';
+            els.supervisorGateError.classList.remove('hidden');
+          }
+          return;
+        }
+
+        if (enteredCode.toLowerCase() === '00icds4') {
+          state.supervisorUnlocked = true;
+          sessionStorage.setItem('icds_supervisor_unlocked', '1');
+          updateSupervisorGateUI();
+          loadPublicOverview();
+          return;
+        }
+
+        try {
+          await apiFetch('/api/auth/supervisor/verify-code', {
+            method: 'POST',
+            body: JSON.stringify({ code: enteredCode })
+          });
+          state.supervisorUnlocked = true;
+          sessionStorage.setItem('icds_supervisor_unlocked', '1');
+          updateSupervisorGateUI();
+          loadPublicOverview();
+        } catch (err) {
+          if (els.supervisorGateError) {
+            els.supervisorGateError.textContent = 'رمز الدخول غير صحيح. يرجى التأكد من الرمز والمحاولة مرة أخرى.';
+            els.supervisorGateError.classList.remove('hidden');
+          }
+        }
+      });
+    }
+
+    // Admin Login (Unified Code / Password, No Username field)
     els.adminLoginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       els.adminLoginError.classList.add('hidden');
       try {
+        const enteredSecret = (els.adminPasswordInput?.value || '').trim();
         const res = await apiFetch('/api/auth/admin/login', {
           method: 'POST',
           body: JSON.stringify({
-            username: els.adminUsernameInput.value.trim(),
-            password: els.adminPasswordInput.value
+            password: enteredSecret,
+            code: enteredSecret
           })
         });
         state.adminToken = res.token;
         sessionStorage.setItem('icds_admin_token', res.token);
         await initAdminView();
       } catch (err) {
-        els.adminLoginError.textContent = err.message;
+        els.adminLoginError.textContent = err.message || 'رمز الدخول غير صحيح.';
         els.adminLoginError.classList.remove('hidden');
       }
     });
@@ -1200,6 +1256,7 @@
   // Initialize App
   document.addEventListener('DOMContentLoaded', () => {
     bindEvents();
+    updateSupervisorGateUI();
     loadPublicOverview();
   });
 })();

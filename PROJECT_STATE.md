@@ -7,34 +7,40 @@
   - **GitHub Repository**: `https://github.com/7ij0d/icds-conference`
   - **Libyan Spider Cloud API & PostgreSQL (`kuro_cloud`)**: `https://api.kurofangs.id.ly/icds/api/*`
 - **Architecture**:
-  - **Cloud Backend**: Node.js + Express + `pg` (`vps_icds_server.js`) running on Libyan Spider VPS (`102.203.202.115:3400` via `icds-conference.service` and Caddy HTTPS proxy at `/icds/*`), connected to PostgreSQL database `kuro_cloud` (`icds_*` tables) and `/var/www/kuro-uploads/icds-receipts/` for payment receipt storage.
-  - **Local Fallback Backend**: Node.js + Express + `better-sqlite3` (`server.js` + `database.js`) on `http://localhost:3400`.
+  - **Cloud Backend**: Node.js + Express + `pg` (`vps_icds_server.js`) running on Libyan Spider VPS (`102.203.202.115:3400` via `icds-conference.service` and Caddy HTTPS proxy at `/icds/*`), connected to PostgreSQL database `kuro_cloud` (`icds_*` tables) and `/var/lib/kuro-cloud/storage/icds-receipts/` for payment receipt storage.
+  - **Local Fallback Backend**: Node.js + Express + `node:sqlite` (`server.js` + `database.js`) on `http://localhost:3400`.
   - **Frontend**: RTL Arabic Responsive UI (`index.html`, `styles.css`, `app.js`, mirrored in `public/`) replicating the exact Desktop & Mobile visual design from the user's reference image.
-  - **Zero Pre-Populated Data**: Starts 100% clean without any fake participants, supervisors, receipts, or financial entries.
 
 ## 2. Done & Verified
-- **2-Shift / 4-Supervisors-Per-Day System (`نظام توزيع المشرفين على فترتين يومياً`)**:
-  - Divided each of the 5 registration days (`الأحد`, `الاثنين`, `الثلاثاء`, `الأربعاء`, `الخميس`) into **2 shifts (`فترتين زمنيتين`)** with **2 supervisors per shift (4 supervisors per day total)**:
-    - **الفترة الأولى (`shift_number = 1`)**: `9:30 صباحاً – 11:30 صباحاً` (`9:30 ص – 11:30 ص`) — Slots `1` & `2`.
-    - **الفترة الثانية (`shift_number = 2`)**: `11:30 صباحاً – 1:30 ظهراً` (`11:30 ص – 1:30 م`) — Slots `3` & `4`.
-  - **Registration Interface (`تسجيل المشاركين`)**:
-    - Step 1: Select Registration Day (`الأحد` – `الخميس`).
-    - Step 2: Select Shift (`الفترة الأولى: 9:30 صباحاً – 11:30 صباحاً` or `الفترة الثانية: 11:30 صباحاً – 1:30 ظهراً`).
-    - Step 3: Select Supervisor from the dropdown, which dynamically lists **only the 2 supervisors assigned to that specific day and shift**.
-    - Immutable snapshot stored with every participant registration (`shift_number`, `shift_name`, `shift_time`, `supervisor_name`, `registration_day_name`, `registration_date`, `registration_time`) so replacing or reassigning a supervisor later never alters past registrations.
-  - **Admin Panel (`لوحة الأدمن`)**:
-    - **Tab 1 (`إدارة المشرفين والفترات الزمنية`)**: Per-day schedule table (`الفترة | الوقت | المشرفون`) to assign/replace/move 2 supervisors for الفترة الأولى and 2 supervisors for الفترة الثانية on each day, plus editable shift timings and full supervisor CRUD.
-    - **Tab 2 (`إدارة التسجيلات`)**: Added filter by Shift (`الفترة الزمنية`) alongside Day, Supervisor, Category, and Academic Year, and displayed the shift badge on every registration record.
-    - **Tab 4 (`التقارير`)**: Detailed counts and financial totals by Day, by Shift (`الفترة الأولى` vs `الفترة الثانية`), and by Supervisor.
+- **Unified Supervisor Access Code (`00icds4`, Case-Insensitive, Zero Username)**:
+  - Removed the `اسم المستخدم (Username)` field completely across the system.
+  - Added the **Supervisor Unified Access Gate (`#supervisor-gate-card`)** before entering the Registration Interface (`واجهة التسجيل`).
+  - Supervisors enter only the unified code `00icds4` (case-insensitive: `00icds4`, `00ICDS4`, `00IcDs4` are all valid) without any username or separate supervisor accounts.
+  - Entering the valid code transitions immediately to the Registration Form (`واجهة التسجيل`) where the supervisor selects Day -> Shift -> Supervisor Name.
+  - Entering an invalid code shows a clear error alert (`رمز الدخول غير صحيح. يرجى التأكد من الرمز والمحاولة مرة أخرى.`).
+- **Official ICDS 2026 Supervisors Schedule Seeded & Assigned Across 5 Days & 2 Shifts**:
+  - **الأحد**:
+    - الفترة الأولى (9:30 – 11:30): `هنا أبو حسانة` ، `أروى فوزي`
+    - الفترة الثانية (11:30 – 1:30): `آرام القرني` ، `وديدة السكوني`
+  - **الاثنين**:
+    - الفترة الأولى (9:30 – 11:30): `عبدالمؤمن بن عون` ، `أحمد المشاي`
+    - الفترة الثانية (11:30 – 1:30): `منة إنيبة` ، `وعد القماطي`
+  - **الثلاثاء**:
+    - الفترة الأولى (9:30 – 11:30): `سلمى المراعيش` ، `شهد التويبي`
+    - الفترة الثانية (11:30 – 1:30): `ملك إنيبة` ، `يقين بالقاسم`
+  - **الأربعاء**:
+    - الفترة الأولى (9:30 – 11:30): `أميرة الرقيق` ، `منال يونس`
+    - الفترة الثانية (11:30 – 1:30): (شاغر قابل للتعيين من لوحة الأدمن) ، `الشيماء خالد`
+  - **الخميس**:
+    - الفترة الأولى (9:30 – 11:30): `سلبيل صقر` ، `ميار الفريقة`
+    - الفترة الثانية (11:30 – 1:30): `منصور أحشاد` ، `معاذ المبروك`
 - **Files Touched**:
-  - `supabase_icds_schema.sql`
   - `vps_icds_server.js`
   - `database.js`
   - `server.js`
   - `index.html` & `public/index.html`
-  - `styles.css` & `public/styles.css`
   - `app.js` & `public/app.js`
   - `PROJECT_STATE.md`
 
 ## 3. Immediate Next Step
-- Ready for the user to add supervisors and assign 2 supervisors to Shift 1 and 2 supervisors to Shift 2 for each day from **لوحة الأدمن -> إدارة المشرفين والفترات الزمنية**, or provide legacy registration files when ready to run the historical import tool.
+- Ready for supervisors to log in with `00icds4` and begin participant registration, and for the Admin to assign the remaining Wednesday Shift 2 slot (`؟؟`) whenever ready or import historical participant records when provided.

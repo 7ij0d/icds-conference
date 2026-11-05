@@ -88,7 +88,48 @@
 
     <!-- 1. REGISTRATION VIEW (DEFAULT ACTIVE VIEW) -->
     <section id="view-register" class="view-section active">
-      <div class="reg-card">
+
+      <!-- Supervisor Unified Access Code Gate (No Username, Only Code 00icds4) -->
+      <div id="supervisor-gate-card" class="reg-card admin-login-card">
+        <div class="reg-card-header">
+          <div class="reg-title-row">
+            <div class="reg-title-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="4" y="11" width="16" height="10" rx="2"/>
+                <path d="M8 11V7a4 4 0 018 0v4"/>
+              </svg>
+            </div>
+            <h2 class="reg-title">دخول المشرفين</h2>
+          </div>
+          <p class="reg-subtitle">أدخل رمز الدخول الموحد للمشرفين للانتقال مباشرة إلى واجهة تسجيل المشاركين.</p>
+        </div>
+
+        <div class="reg-divider"></div>
+
+        <form id="supervisor-gate-form" class="reg-form" novalidate>
+          <div class="form-block">
+            <label class="field-label" for="supervisor-access-code">رمز الدخول <span class="req">*</span></label>
+            <input
+              type="text"
+              id="supervisor-access-code"
+              class="form-input plain-input"
+              dir="ltr"
+              placeholder="أدخل رمز الدخول الخاص بالمشرفين"
+              autocomplete="off"
+              required
+            />
+          </div>
+
+          <div id="supervisor-gate-error" class="reg-feedback error hidden" role="alert"></div>
+
+          <button type="submit" class="submit-participant-btn">
+            <span>دخول إلى واجهة التسجيل</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Registration Form Card (Shown immediately after entering valid code 00icds4) -->
+      <div id="reg-form-card" class="reg-card hidden">
         <!-- Subtle Top-Left Tooth Watermark (Desktop Reference Match) -->
         <div class="card-tooth-watermark" aria-hidden="true">
           <svg viewBox="0 0 180 140" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -368,15 +409,10 @@
 
         <div class="reg-divider"></div>
 
-        <form id="admin-login-form" class="reg-form">
+        <form id="admin-login-form" class="reg-form" novalidate>
           <div class="form-block">
-            <label class="field-label" for="admin-username">اسم المستخدم <span class="req">*</span></label>
-            <input type="text" id="admin-username" class="form-input plain-input" placeholder="أدخل اسم المستخدم" required />
-          </div>
-
-          <div class="form-block">
-            <label class="field-label" for="admin-password">كلمة المرور <span class="req">*</span></label>
-            <input type="password" id="admin-password" class="form-input plain-input" placeholder="أدخل كلمة المرور" required />
+            <label class="field-label" for="admin-password">رمز الدخول <span class="req">*</span></label>
+            <input type="password" id="admin-password" class="form-input plain-input" dir="ltr" placeholder="أدخل رمز الدخول" autocomplete="off" required />
           </div>
 
           <div id="admin-login-error" class="reg-feedback error hidden"></div>

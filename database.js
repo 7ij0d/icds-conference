@@ -239,7 +239,7 @@ function initDatabase() {
     currency_short: 'د.ل',
     registration_open: '1',
     require_supervisor_pin: '0',
-    supervisor_portal_code: '',
+    supervisor_portal_code: '00icds4',
     reg_number_prefix: 'ICDS4',
     shift_1_name: 'الفترة الأولى',
     shift_1_time: '9:30 صباحاً – 11:30 صباحاً',
@@ -256,6 +256,7 @@ function initDatabase() {
   for (const [k, v] of Object.entries(defaultSettings)) {
     insertSetting.run(k, v, now);
   }
+  db.prepare(`UPDATE settings SET value = '00icds4', updated_at = ? WHERE key = 'supervisor_portal_code' AND (value IS NULL OR value = '')`).run(now);
 
   // Migrate day_supervisor_assignments if it had old CHECK(slot_number IN (1,2))
   try {
@@ -324,6 +325,84 @@ function initDatabase() {
       insertSlot.run(d.id, 1, 2, now);
       insertSlot.run(d.id, 2, 3, now);
       insertSlot.run(d.id, 2, 4, now);
+    }
+  }
+
+  // Seed Official ICDS 2026 Supervisors & Day/Shift Assignments if supervisors table is empty
+  const supCount = db.prepare('SELECT COUNT(*) AS count FROM supervisors').get().count;
+  if (supCount === 0) {
+    const officialSchedule = [
+      {
+        day_key: 'sunday',
+        slots: [
+          { shift: 1, slot: 1, name: 'هنا أبو حسانة' },
+          { shift: 1, slot: 2, name: 'أروى فوزي' },
+          { shift: 2, slot: 3, name: 'آرام القرني' },
+          { shift: 2, slot: 4, name: 'وديدة السكوني' }
+        ]
+      },
+      {
+        day_key: 'monday',
+        slots: [
+          { shift: 1, slot: 1, name: 'عبدالمؤمن بن عون' },
+          { shift: 1, slot: 2, name: 'أحمد المشاي' },
+          { shift: 2, slot: 3, name: 'منة إنيبة' },
+          { shift: 2, slot: 4, name: 'وعد القماطي' }
+        ]
+      },
+      {
+        day_key: 'tuesday',
+        slots: [
+          { shift: 1, slot: 1, name: 'سلمى المراعيش' },
+          { shift: 1, slot: 2, name: 'شهد التويبي' },
+          { shift: 2, slot: 3, name: 'ملك إنيبة' },
+          { shift: 2, slot: 4, name: 'يقين بالقاسم' }
+        ]
+      },
+      {
+        day_key: 'wednesday',
+        slots: [
+          { shift: 1, slot: 1, name: 'أميرة الرقيق' },
+          { shift: 1, slot: 2, name: 'منال يونس' },
+          { shift: 2, slot: 3, name: null },
+          { shift: 2, slot: 4, name: 'الشيماء خالد' }
+        ]
+      },
+      {
+        day_key: 'thursday',
+        slots: [
+          { shift: 1, slot: 1, name: 'سلبيل صقر' },
+          { shift: 1, slot: 2, name: 'ميار الفريقة' },
+          { shift: 2, slot: 3, name: 'منصور أحشاد' },
+          { shift: 2, slot: 4, name: 'معاذ المبروك' }
+        ]
+      }
+    ];
+
+    const insertSup = db.prepare(`
+      INSERT INTO supervisors (name, phone, access_pin, notes, is_active, created_at, updated_at)
+      VALUES (?, '', '', '', 1, ?, ?)
+    `);
+    const upsertSlot = db.prepare(`
+      INSERT INTO day_supervisor_assignments (day_id, shift_number, slot_number, supervisor_id, updated_at)
+      VALUES (?, ?, ?, ?, ?)
+      ON CONFLICT(day_id, slot_number) DO UPDATE SET
+        shift_number = excluded.shift_number,
+        supervisor_id = excluded.supervisor_id,
+        updated_at = excluded.updated_at
+    `);
+    const allDays = db.prepare('SELECT id, day_key FROM registration_days').all();
+    for (const dayPlan of officialSchedule) {
+      const dayRow = allDays.find((d) => d.day_key === dayPlan.day_key);
+      if (!dayRow) continue;
+      for (const s of dayPlan.slots) {
+        let supId = null;
+        if (s.name) {
+          const info = insertSup.run(s.name, now, now);
+          supId = info.lastInsertRowid;
+        }
+        upsertSlot.run(dayRow.id, s.shift, s.slot, supId, now);
+      }
     }
   }
 }
