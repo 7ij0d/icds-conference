@@ -12,20 +12,33 @@
   - **Frontend**: RTL Arabic Responsive UI (`index.html`, `styles.css`, `app.js`, mirrored in `public/`) replicating the exact Desktop & Mobile visual design from the user's reference image.
 
 ## 2. Done & Verified
-- **Direct Supervisor Access (واجهة تسجيل المشاركين تفتح مباشرة)**:
-  - المشرفون يدخلون مباشرة إلى صفحة **تسجيل المشاركين** دون أي كلمة مرور أو رمز دخول أو اسم مستخدم.
-  - بمجرد فتح الموقع تظهر استمارة التسجيل مباشرة: يختار المشرف اليوم $\leftarrow$ يختار الفترة الزمنية $\leftarrow$ يختار اسمه مباشرة من قائمة المشرفين المخصصين.
-- **Unified Admin Code (`00icds4`, No Username)**:
-  - تم إلغاء خانة اسم المستخدم بالكامل من لوحة الأدمن.
-  - الدخول إلى **لوحة الأدمن** برمز الدخول الموحد فقط: `00icds4`.
-  - يقبل الرمز بحروف صغيرة أو كبيرة أو مختلطة (`00icds4` ، `00ICDS4` ، `00IcDs4`).
-- **Official ICDS 2026 Supervisors Schedule Seeded in Cloud PostgreSQL**:
-  - جميع المشرفين موزعين بدقة على الأيام الخمسة والفترتين الصباحية والمسائية.
+- **Exact Redesign of "سجل التسجيلات" (Registration Records) matching the Attached Reference Image**:
+  - **Desktop / Laptop View**:
+    - **Right Sidebar Navigation**: Brand header with dental tooth icon + title, active `سجل التسجيلات` button, links for `الرئيسية`, `إدارة المشرفين والفترات`, `التقارير والإحصائيات`, `استيراد البيانات`, `الإعدادات`, and red `تسجيل الخروج` at the bottom.
+    - **Header & Topbar**: Topbar with `المدير العام` pill + notification bell with red alert dot, centered title `سجل التسجيلات` with clipboard icon and subtitle.
+    - **Filters Row Card**: Date filter (`التاريخ`), Day filter (`اليوم`), Period filter (`الفترة: جميع الفترات / الفترة الأولى / الفترة الثانية`), and teal submit button (`عرض السجل` with magnifying glass icon).
+    - **4 Summary Statistic Cards**:
+      1. `إجمالي المسجلين` (Green tint with users icon)
+      2. `الفترة الأولى` (Teal tint with single user icon)
+      3. `الفترة الثانية` (Blue tint with single user icon)
+      4. `إجمالي المبالغ` (Purple tint with currency icon)
+    - **Toolbar**: Quick search input (`بحث بالاسم أو رقم التسجيل ...`), `تصدير CSV` button, and green `تصدير Excel` button.
+    - **Detailed Table**: Columns: `#`, `الاسم بالعربي`, `الاسم بالإنجليزي`, `نوع المشارك`, `السنة الدراسية`, `رسوم التسجيل`, `المشرف`, `الفترة`, `وقت التسجيل`, `الإيصال` with thumbnail hover eye-overlay to open lightbox.
+    - **Pagination Bar**: Rows per page picker (`10`, `25`, `50`, `100`), total results count, and numeric pagination controls (`«`, `‹`, page numbers, `›`, `»`).
+  - **Mobile Smartphone View**:
+    - Mobile header bar with sidebar toggle button.
+    - Stacked vertical filters (Date, Day, Period) and full-width `عرض السجل` button.
+    - 2x2 grid summary statistics cards.
+    - Search bar and two-column CSV / Excel export buttons.
+    - Compact, neat participant cards matching the reference image with index circle, Arabic & English names, registration time, shift badge, and interactive receipt thumbnail preview.
+    - Full mobile touch pagination controls.
+  - **Functional Filtering**: Filters by date, day, shift, and search update live from both frontend and backend queries.
 - **Files Touched**:
   - `index.html` & `public/index.html`
+  - `styles.css` & `public/styles.css`
   - `app.js` & `public/app.js`
   - `server.js` & `vps_icds_server.js`
   - `PROJECT_STATE.md`
 
 ## 3. Immediate Next Step
-- النظام جاهز بالكامل للتسجيل المباشر من المشرفين ولإدارة الأدمن باستخدام الرمز الموحد `00icds4`.
+- The redesigned Registration Records page is fully deployed and active on GitHub Pages and the Libyan Spider cloud server.
