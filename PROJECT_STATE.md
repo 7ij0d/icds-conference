@@ -13,34 +13,35 @@
 
 ## 2. Done & Verified
 - **Unified Supervisor Access Code (`00icds4`, Case-Insensitive, Zero Username)**:
-  - Removed the `اسم المستخدم (Username)` field completely across the system.
-  - Added the **Supervisor Unified Access Gate (`#supervisor-gate-card`)** before entering the Registration Interface (`واجهة التسجيل`).
-  - Supervisors enter only the unified code `00icds4` (case-insensitive: `00icds4`, `00ICDS4`, `00IcDs4` are all valid) without any username or separate supervisor accounts.
-  - Entering the valid code transitions immediately to the Registration Form (`واجهة التسجيل`) where the supervisor selects Day -> Shift -> Supervisor Name.
-  - Entering an invalid code shows a clear error alert (`رمز الدخول غير صحيح. يرجى التأكد من الرمز والمحاولة مرة أخرى.`).
-- **Official ICDS 2026 Supervisors Schedule Seeded & Assigned Across 5 Days & 2 Shifts**:
+  - Completely removed the `Username` requirement for supervisors.
+  - Added the **Supervisor Unified Access Gate (`#supervisor-gate-card`)** before entering the Registration Interface.
+  - Accepts the unified code `00icds4` case-insensitively (`00icds4`, `00ICDS4`, `00IcDs4`).
+  - Correct code directly unlocks the registration interface; incorrect code presents a clear Arabic alert.
+- **Official ICDS 2026 Supervisors Schedule Seeded & Verified in Cloud PostgreSQL**:
   - **الأحد**:
-    - الفترة الأولى (9:30 – 11:30): `هنا أبو حسانة` ، `أروى فوزي`
-    - الفترة الثانية (11:30 – 1:30): `آرام القرني` ، `وديدة السكوني`
+    - الفترة الأولى (9:30 ص – 11:30 ص): `هنا أبو حسانة` ، `أروى فوزي`
+    - الفترة الثانية (11:30 ص – 1:30 م): `آرام القرني` ، `وديدة السكوني`
   - **الاثنين**:
-    - الفترة الأولى (9:30 – 11:30): `عبدالمؤمن بن عون` ، `أحمد المشاي`
-    - الفترة الثانية (11:30 – 1:30): `منة إنيبة` ، `وعد القماطي`
+    - الفترة الأولى (9:30 ص – 11:30 ص): `عبدالمؤمن بن عون` ، `أحمد المشاي`
+    - الفترة الثانية (11:30 ص – 1:30 م): `منة إنيبة` ، `وعد القماطي`
   - **الثلاثاء**:
-    - الفترة الأولى (9:30 – 11:30): `سلمى المراعيش` ، `شهد التويبي`
-    - الفترة الثانية (11:30 – 1:30): `ملك إنيبة` ، `يقين بالقاسم`
+    - الفترة الأولى (9:30 ص – 11:30 ص): `سلمى المراعيش` ، `شهد التويبي`
+    - الفترة الثانية (11:30 ص – 1:30 م): `ملك إنيبة` ، `يقين بالقاسم`
   - **الأربعاء**:
-    - الفترة الأولى (9:30 – 11:30): `أميرة الرقيق` ، `منال يونس`
-    - الفترة الثانية (11:30 – 1:30): (شاغر قابل للتعيين من لوحة الأدمن) ، `الشيماء خالد`
+    - الفترة الأولى (9:30 ص – 11:30 ص): `أميرة الرقيق` ، `منال يونس`
+    - الفترة الثانية (11:30 ص – 1:30 م): شاغر (`؟؟` قابل للتعيين من لوحة الأدمن) ، `الشيماء خالد`
   - **الخميس**:
-    - الفترة الأولى (9:30 – 11:30): `سلبيل صقر` ، `ميار الفريقة`
-    - الفترة الثانية (11:30 – 1:30): `منصور أحشاد` ، `معاذ المبروك`
+    - الفترة الأولى (9:30 ص – 11:30 ص): `سلبيل صقر` ، `ميار الفريقة`
+    - الفترة الثانية (11:30 ص – 1:30 م): `منصور أحشاد` ، `معاذ المبروك`
+- **Zero Fake Participants**: The participants database remains 100% clean with `0` records, ready for live registration.
 - **Files Touched**:
   - `vps_icds_server.js`
   - `database.js`
   - `server.js`
   - `index.html` & `public/index.html`
   - `app.js` & `public/app.js`
+  - `seed_supervisors.sql`
   - `PROJECT_STATE.md`
 
 ## 3. Immediate Next Step
-- Ready for supervisors to log in with `00icds4` and begin participant registration, and for the Admin to assign the remaining Wednesday Shift 2 slot (`؟؟`) whenever ready or import historical participant records when provided.
+- The system is live, tested, and ready for supervisors to start registering participants using code `00icds4`, and for the admin to assign the open Wednesday slot or import past data whenever provided.
